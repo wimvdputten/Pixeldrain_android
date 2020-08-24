@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import xo.william.pixeldrain.fileList.DummyAdapter
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -23,10 +24,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setRecyclerView() {
-        val myDataset = arrayOf("Item 1", "Item 2")
-
+        val dataSet = DummyAdapter().getDummyFiles();
         viewManager = LinearLayoutManager(this)
-        viewAdapter = FileAdapter(myDataset);
+        viewAdapter = FileAdapter(dataSet);
 
         recyclerView = findViewById<RecyclerView>(R.id.file_recyclerView).apply {
             // use this setting to improve performance if you know that changes
