@@ -1,14 +1,16 @@
-import android.text.Html
+package xo.william.pixeldrain.fileList
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import xo.william.pixeldrain.R
-import xo.william.pixeldrain.fileList.FileModel
 
-class FileAdapter(private val myDataset: Array<FileModel>) :
+class FileAdapter() :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
+    private var files = emptyList<FileModel>() // Cached copy of words
+
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -33,14 +35,20 @@ class FileAdapter(private val myDataset: Array<FileModel>) :
         // - replace the contents of the view with that element
         val nameTextView = holder.constraintlayout.findViewById<TextView>(R.id.nameTextView)
         val fileTypeTextView = holder.constraintlayout.findViewById<TextView>(R.id.fileTypeTextView)
-        val uploadDateTextView = holder.constraintlayout.findViewById<TextView>(R.id.UploadDateTextView)
+        val uploadDateTextView =
+            holder.constraintlayout.findViewById<TextView>(R.id.UploadDateTextView)
 
-        nameTextView.setText(myDataset[position].name)
-        fileTypeTextView.setText(myDataset[position].mime_type);
-        uploadDateTextView.setText(myDataset[position].date_uploaded);
+        nameTextView.setText(files[position].name)
+        fileTypeTextView.setText(files[position].mime_type);
+        uploadDateTextView.setText(files[position].date_uploaded);
 
     }
 
+    internal fun setFiles(files: List<FileModel>) {
+        this.files = files;
+        notifyDataSetChanged()
+    }
+
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = myDataset.size
+    override fun getItemCount() = files.size
 }
