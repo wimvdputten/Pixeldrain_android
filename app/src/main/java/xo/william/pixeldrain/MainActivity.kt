@@ -2,12 +2,16 @@ package xo.william.pixeldrain
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.kittinunf.fuel.core.FuelError
+import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.result.Result
 import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.fileList.DummyAdapter
 import xo.william.pixeldrain.fileList.FileAdapter
@@ -29,10 +33,13 @@ class MainActivity : AppCompatActivity() {
         fileViewModel.allFiles.observe(
             this,
             Observer { files -> files?.let { viewAdapter.setFiles(it) } })
+
+        fileViewModel.testInfo.observe(
+            this,
+            Observer { info -> Log.i("Observe", info) })
     }
 
     fun setRecyclerView() {
-        val dataSet = DummyAdapter().getDummyFiles();
         viewManager = LinearLayoutManager(this)
         viewAdapter = FileAdapter();
 

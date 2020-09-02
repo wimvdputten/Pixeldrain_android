@@ -3,8 +3,8 @@ package xo.william.pixeldrain.fileList
 import kotlin.random.Random
 
 class FileModel() {
-    var date_uploaded: String
-    var mime_type: String
+    var date_uploaded: String;
+    var mime_type: String;
     var id: String = "";
     var name: String = "";
 
