@@ -41,6 +41,11 @@ dependencies {
 
     implementation "androidx.room:room-runtime:$room_version"
     apply plugin: 'kotlin-kapt'
+    apply plugin: 'kotlinx-serialization'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC" // JVM dependency
+
     kapt("androidx.room:room-compiler:$room_version")
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
