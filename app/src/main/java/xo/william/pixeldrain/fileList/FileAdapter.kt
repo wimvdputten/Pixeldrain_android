@@ -1,15 +1,19 @@
 package xo.william.pixeldrain.fileList
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
 import xo.william.pixeldrain.R
 
 class FileAdapter() :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
     private var files = emptyList<FileModel>() // Cached copy of words
+    private var infoFiles = emptyList<InfoModel>() // Cached copy of words
 
 
     // Provide a reference to the views for each data item
@@ -37,8 +41,13 @@ class FileAdapter() :
         val fileTypeTextView = holder.constraintlayout.findViewById<TextView>(R.id.fileTypeTextView)
         val uploadDateTextView =
             holder.constraintlayout.findViewById<TextView>(R.id.UploadDateTextView)
-
-        nameTextView.setText(files[position].name)
+        val infoModel = infoFiles.find { infoModel -> infoModel.id.equals(files[position].id) }
+        if (infoModel !== null) {
+            val text = infoModel.id +  " ("+infoModel.views + ") ";
+            nameTextView.setText(text);
+        } else {
+            nameTextView.setText(files[position].name)
+        }
         fileTypeTextView.setText(files[position].mime_type);
         uploadDateTextView.setText(files[position].date_uploaded);
 
@@ -46,6 +55,11 @@ class FileAdapter() :
 
     internal fun setFiles(files: List<FileModel>) {
         this.files = files;
+        notifyDataSetChanged()
+    }
+
+    internal fun updateTitle(files: List<InfoModel>) {
+        this.infoFiles = files;
         notifyDataSetChanged()
     }
 

@@ -1,13 +1,11 @@
 package xo.william.pixeldrain.repository
 
 import androidx.lifecycle.*
-import com.github.kittinunf.fuel.core.FuelError
-import com.github.kittinunf.fuel.core.Response
-import com.github.kittinunf.result.Result
 import xo.william.pixeldrain.api.FuelService
 import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.database.FileDao
 import xo.william.pixeldrain.fileList.FileModel
+import xo.william.pixeldrain.fileList.InfoModel
 
 // Declares the DAO as a private property in the constructor. Pass in the DAO
 // instead of the whole database, because you only need access to the DAO
@@ -62,6 +60,13 @@ class FileRepository(private val fileDao: FileDao) {
 
     suspend fun insert(file: File) {
         fileDao.insert(file)
+    }
+
+    fun setInfoFiles(_infoFiles: MutableLiveData<MutableList<InfoModel>>, files: List<FileModel>): MutableLiveData<MutableList<InfoModel>> {
+        for (file in files) {
+            fuelService.setInfoData2(_infoFiles, file.id);
+        }
+        return _infoFiles;
     }
 
 }
