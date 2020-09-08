@@ -49,7 +49,7 @@
         tools:text="Uploaded" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/fileThumbnail"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginTop="5dp"
@@ -58,7 +58,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon"
         tools:srcCompat="@tools:sample/avatars" />
 
     <View
@@ -71,5 +70,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
 
         tools:layout_editor_absoluteX="5dp" />
+
+    <ProgressBar
+        android:id="@+id/fileThumbnailLoader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

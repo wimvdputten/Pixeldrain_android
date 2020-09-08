@@ -1,14 +1,14 @@
 package xo.william.pixeldrain.model
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import xo.william.pixeldrain.database.AppDatabase
 import xo.william.pixeldrain.database.File
+import xo.william.pixeldrain.database.FileDao
 import xo.william.pixeldrain.fileList.FileModel
+import xo.william.pixeldrain.fileList.InfoModel
 import xo.william.pixeldrain.repository.FileRepository
 
 class FileViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,11 +20,20 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     //   the UI when the data actually changes.
     // - Repository is completely separated from the UI through the ViewModel.
     val allFiles: LiveData<List<FileModel>>
+    private val fileDao: FileDao = AppDatabase.getDatabase(application, viewModelScope).fileDao()
 
+    private var _infoFiles: MutableLiveData<MutableList<InfoModel>> = MutableLiveData();
+    val infoFiles: LiveData<MutableList<InfoModel>>
     init {
-        val fileDao = AppDatabase.getDatabase(application, viewModelScope).fileDao()
         repository = FileRepository(fileDao)
         allFiles = repository.allFiles
+        infoFiles = this.setInfoFiles();
+    }
+
+    private fun setInfoFiles(): LiveData<MutableList<InfoModel>> {
+        return Transformations.switchMap(allFiles) { files ->
+            repository.setInfoFiles(_infoFiles, files);
+        }
     }
 
     /**
