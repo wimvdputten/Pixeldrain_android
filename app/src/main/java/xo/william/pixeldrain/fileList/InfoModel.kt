@@ -10,4 +10,9 @@ data class InfoModel(var id: String) {
     var date_last_view = ""
     var info = "string"
     var thumbnail_href: String = "";
+    val baseUrl = "https://pixeldrain.com/api"
+
+    fun getThumbnailUrl(): String {
+        return baseUrl + thumbnail_href;
+    }
 }
