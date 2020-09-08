@@ -34,37 +34,15 @@ class FileRepository(private val fileDao: FileDao) {
         fileModel.date_uploaded = file.dateUpload;
         return fileModel;
     }
-    fun setInfoData(data:MutableLiveData<String>) {
-        return fuelService.setInfoData(data);
-    }
-
-//    fun getFileApiInfo(id: String): LiveData<String> {
-//        val liveDataResponse = fuelService.getFileInfo(id)
-//        Transformations.map(liveDataResponse) { data ->
-//            if (data.component1() !== null) {
-//                return@map data.component1();
-//            }
-//            return@map "Something went wrong";
-//        }
-//
-//        return Transformations.map(liveDataResponse) { data ->
-//
-//            Log.i("url", data.component1())
-//
-//            if (data.component1() !== null) {
-//                return@map data.component1();
-//            }
-//            return@map "Something went wrong";
-//        }
-//    }
 
     suspend fun insert(file: File) {
         fileDao.insert(file)
     }
 
-    fun setInfoFiles(_infoFiles: MutableLiveData<MutableList<InfoModel>>, files: List<FileModel>): MutableLiveData<MutableList<InfoModel>> {
+    fun setInfoFiles(_infoFiles: MutableLiveData<MutableList<InfoModel>>, files: List<FileModel>):
+            MutableLiveData<MutableList<InfoModel>> {
         for (file in files) {
-            fuelService.setInfoData2(_infoFiles, file.id);
+            fuelService.setInfoData(_infoFiles, file.id);
         }
         return _infoFiles;
     }
