@@ -1,5 +1,6 @@
 package xo.william.pixeldrain.fileList
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
+import xo.william.pixeldrain.MainActivity
 import xo.william.pixeldrain.R
+import java.io.InputStream
 import java.lang.Exception
+import java.net.URL
 
 class FileAdapter() :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
@@ -23,7 +26,6 @@ class FileAdapter() :
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just a string in this case that is shown in a TextView.
     class MyViewHolder(val constraintlayout: ConstraintLayout) :
-        RecyclerView.ViewHolder(constraintlayout)
 
 
     // Create new views (invoked by the layout manager)
@@ -60,18 +62,16 @@ class FileAdapter() :
         val imageview = holder.constraintlayout.findViewById<ImageView>(R.id.fileThumbnail);
         val progressBar =
             holder.constraintlayout.findViewById<ProgressBar>(R.id.fileThumbnailLoader)
-        val callback = object : Callback {
-            override fun onSuccess() {
-                progressBar.visibility = View.GONE;
-            }
+        try {
+        val urlString = infoModel.getThumbnailUrl();
+        Glide.with(holder.constraintlayout).load(urlString).fitCenter().into(imageview);
 
-            override fun onError(e: Exception?) {
-                progressBar.visibility = View.GONE;
-            }
+            progressBar.visibility = View.GONE;
+        } catch (e: Exception) {
+            progressBar.visibility = View.GONE;
+            Log.e("loadImage", "error: " + infoModel.getThumbnailUrl() + "  " + e.message);
         }
 
-        Picasso.get().load(infoModel.getThumbnailUrl()).resize(64, 64).centerCrop()
-            .into(imageview, callback);
 
     }
 

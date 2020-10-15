@@ -25,9 +25,9 @@ class DummyAdapter {
 
     fun getAntFile(): FileModel {
         val fileModel = FileModel();
-        fileModel.id = "6BBUUerM";
-        fileModel.name = "9qPDXw8F_400x400.jpg";
-        fileModel.date_uploaded = "2020-08-19T09:11:07.625969Z"
+        fileModel.id = "rv3DeDaJ";
+        fileModel.name = "tumblr_m5l7dp1FK61qab0ywo1_500.png";
+        fileModel.date_uploaded = "2020-10-06T09:11:07.625969Z"
         fileModel.mime_type = "image/jpeg";
         return fileModel;
     }
