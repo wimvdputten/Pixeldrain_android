@@ -1,6 +1,7 @@
 package xo.william.pixeldrain.repository
 
 import androidx.lifecycle.*
+import com.github.kittinunf.fuel.core.requests.UploadRequest
 import xo.william.pixeldrain.api.FuelService
 import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.database.FileDao
@@ -11,6 +12,7 @@ import java.io.InputStream
 // Declares the DAO as a private property in the constructor. Pass in the DAO
 // instead of the whole database, because you only need access to the DAO
 class FileRepository(private val fileDao: FileDao) {
+
 
 
     // Room executes all queries on a separate thread.
@@ -40,9 +42,13 @@ class FileRepository(private val fileDao: FileDao) {
         fileDao.insert(file)
     }
 
-    fun uploadPost(selectedFile: InputStream, fileName: String?) {
-        return fuelService.uploadFile(selectedFile, fileName);
+    fun uploadPost(selectedFile: InputStream, fileName: String?): UploadRequest {
+      return   fuelService.uploadFile(selectedFile, fileName)
     }
+
+    /**
+     * Launching a new coroutine to insert the data in a non-blocking way
+     */
 
     fun setInfoFiles(_infoFiles: MutableLiveData<MutableList<InfoModel>>, files: List<FileModel>):
             MutableLiveData<MutableList<InfoModel>> {

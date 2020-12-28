@@ -1,9 +1,13 @@
 package xo.william.pixeldrain.model
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import xo.william.pixeldrain.database.AppDatabase
 import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.database.FileDao
@@ -14,6 +18,7 @@ import java.io.InputStream
 
 class FileViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val format = Json { ignoreUnknownKeys = true }
     private val repository: FileRepository
 
     // Using LiveData and caching what getAlphabetizedWords returns has several benefits:
@@ -37,11 +42,29 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-     fun uploadPost(stream: InputStream?, fileName: String?) {
-         if (stream !== null){
-             repository.uploadPost(stream, fileName);
-         }
-    }
+
+    /**
+     * Launching a new coroutine to insert the data in a non-blocking way
+     */
+    fun uploadPost(stream: InputStream?, fileName: String?) =
+        viewModelScope.launch(Dispatchers.IO) {
+            if (stream !== null) {
+
+                repository.uploadPost(stream, fileName)
+                    .responseString { request, response, result ->
+                        when (result) {
+                            is Result.Success -> {
+                                val data = result.get()
+                                Log.d("response", "data: " + data);
+                                val file = format.decodeFromString<InfoModel>(data);
+                                val dbFile = File(file.id, fileName + "", "mime", "asd", 666)
+                                insert(dbFile);
+                            }
+                        }
+                    }
+            }
+
+        }
 
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
