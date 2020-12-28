@@ -6,6 +6,7 @@ import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.database.FileDao
 import xo.william.pixeldrain.fileList.FileModel
 import xo.william.pixeldrain.fileList.InfoModel
+import java.io.InputStream
 
 // Declares the DAO as a private property in the constructor. Pass in the DAO
 // instead of the whole database, because you only need access to the DAO
@@ -37,6 +38,10 @@ class FileRepository(private val fileDao: FileDao) {
 
     suspend fun insert(file: File) {
         fileDao.insert(file)
+    }
+
+    fun uploadPost(selectedFile: InputStream, fileName: String?) {
+        return fuelService.uploadFile(selectedFile, fileName);
     }
 
     fun setInfoFiles(_infoFiles: MutableLiveData<MutableList<InfoModel>>, files: List<FileModel>):

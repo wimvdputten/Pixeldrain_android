@@ -10,11 +10,8 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import xo.william.pixeldrain.MainActivity
 import xo.william.pixeldrain.R
-import java.io.InputStream
 import java.lang.Exception
-import java.net.URL
 
 class FileAdapter() :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
@@ -26,6 +23,7 @@ class FileAdapter() :
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just a string in this case that is shown in a TextView.
     class MyViewHolder(val constraintlayout: ConstraintLayout) :
+        RecyclerView.ViewHolder(constraintlayout)
 
 
     // Create new views (invoked by the layout manager)

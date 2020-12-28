@@ -10,6 +10,7 @@ import xo.william.pixeldrain.database.FileDao
 import xo.william.pixeldrain.fileList.FileModel
 import xo.william.pixeldrain.fileList.InfoModel
 import xo.william.pixeldrain.repository.FileRepository
+import java.io.InputStream
 
 class FileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -34,6 +35,12 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         return Transformations.switchMap(allFiles) { files ->
             repository.setInfoFiles(_infoFiles, files);
         }
+    }
+
+     fun uploadPost(stream: InputStream?, fileName: String?) {
+         if (stream !== null){
+             repository.uploadPost(stream, fileName);
+         }
     }
 
     /**
