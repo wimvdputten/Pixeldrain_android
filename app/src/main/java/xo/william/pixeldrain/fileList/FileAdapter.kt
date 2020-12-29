@@ -43,8 +43,9 @@ class FileAdapter() :
         val fileTypeTextView = holder.constraintlayout.findViewById<TextView>(R.id.fileTypeTextView)
         val uploadDateTextView =
             holder.constraintlayout.findViewById<TextView>(R.id.UploadDateTextView)
+
         val infoModel: InfoModel? =
-            infoFiles.find { infoModel -> infoModel.id.equals(files[position].id) }
+            infoFiles.find { infoModel ->   if (!infoModel.equals(null)) infoModel.id.equals(files[position].id) else false }
         if (infoModel !== null) {
             loadImage(infoModel, holder);
             val text = infoModel.id + " (" + infoModel.views + ") ";
@@ -82,7 +83,6 @@ class FileAdapter() :
         this.infoFiles = files;
         notifyDataSetChanged()
     }
-
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = files.size

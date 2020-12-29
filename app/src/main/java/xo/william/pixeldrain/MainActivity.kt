@@ -1,11 +1,15 @@
 package xo.william.pixeldrain
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.os.Handler
 import android.provider.MediaStore.MediaColumns.DISPLAY_NAME
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -58,10 +62,8 @@ class MainActivity : AppCompatActivity() {
 
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
-
         }
     }
-
 
     /**
      * Open file selection
@@ -82,10 +84,19 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == 111 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
-            var fileName = data?.data?.path
+            startUpload(selectedFile)
+        }
+    }
+
+    fun startUpload(selectedFile: Uri?) {
+        if (selectedFile !== null){
+            var fileName = selectedFile.path
+
+            //start progress
+            val mainProgress = findViewById<ProgressBar>(R.id.main_progress)
+            mainProgress.visibility = View.VISIBLE;
 
             //get fileName from uri
-            if (selectedFile !== null) {
                 val filePathColumn = arrayOf(DISPLAY_NAME)
                 val cursor = contentResolver.query(selectedFile, filePathColumn, null, null, null)
                 if (cursor !== null) {
@@ -93,11 +104,19 @@ class MainActivity : AppCompatActivity() {
                     fileName = cursor.getString(0);
                     cursor.close();
                 }
-
                 val stream = contentResolver.openInputStream(selectedFile);
-                fileViewModel.uploadPost(stream, fileName);
-            }
+                fileViewModel.uploadPost(stream, fileName, this::finishUpload);
         }
+    }
+
+    fun finishUpload(message: String?){
+        val handler = Handler(this.getMainLooper())
+        handler.post(Runnable {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        })
+
+        val mainProgress  =   findViewById<ProgressBar>(R.id.main_progress)
+        mainProgress.visibility = View.INVISIBLE;
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

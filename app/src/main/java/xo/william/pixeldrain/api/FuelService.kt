@@ -53,29 +53,10 @@ class FuelService() {
 
     fun uploadFile(selectedFile: InputStream, fileName: String?): UploadRequest {
         val url = baseUri + "file";
-        var setFileName = if (fileName !== null) fileName else "file";
+        val setFileName = if (fileName !== null) fileName else "file";
 
         Log.d("response", "url: " + url + " " + fileName);
         return Fuel.upload(url, method = Method.POST, parameters = listOf("name" to setFileName))
             .add(BlobDataPart(selectedFile, name = "file", filename = setFileName));
-        
-        /**
-        Fuel.upload(url, method = Method.POST, parameters = listOf("name" to setFileName))
-        .add(BlobDataPart(selectedFile, name = "file", filename = setFileName))
-        .responseString { request, response, result ->
-        when (result) {
-        is Result.Failure -> {
-        val ex = result.getException()
-        Log.d("response", "ex: " + ex.message);
-        }
-
-        is Result.Success -> {
-        val data = result.get()
-        Log.d("response", "data: " + data);
-        }
-        }
-        }
-         **/
-
     }
 }

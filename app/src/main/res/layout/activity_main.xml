@@ -8,6 +8,17 @@
     tools:context=".MainActivity"
     tools:menu="@menu/main_toolbar">
 
+    <ProgressBar
+        android:id="@+id/main_progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginBottom="35dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/file_recyclerView"
+        app:layout_constraintStart_toStartOf="@+id/file_recyclerView" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/main_toolbar"
         android:layout_width="match_parent"

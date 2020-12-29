@@ -46,10 +46,9 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */
-    fun uploadPost(stream: InputStream?, fileName: String?) =
+    fun uploadPost(stream: InputStream?, fileName: String?, callback: ((String) -> Unit)) =
         viewModelScope.launch(Dispatchers.IO) {
             if (stream !== null) {
-
                 repository.uploadPost(stream, fileName)
                     .responseString { request, response, result ->
                         when (result) {
@@ -59,6 +58,12 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                                 val file = format.decodeFromString<InfoModel>(data);
                                 val dbFile = File(file.id, fileName + "", "mime", "asd", 666)
                                 insert(dbFile);
+                                callback("Succes: " + file.id + " added");
+                            }
+
+                            is Result.Failure -> {
+                                val ex = result.getException()
+                                callback("Something went wrong: " + ex.message);
                             }
                         }
                     }
