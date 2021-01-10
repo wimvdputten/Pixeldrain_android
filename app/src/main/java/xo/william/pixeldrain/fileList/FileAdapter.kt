@@ -1,41 +1,35 @@
 package xo.william.pixeldrain.fileList
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import xo.william.pixeldrain.R
+import xo.william.pixeldrain.repository.ClipBoard
 
-class FileAdapter :
+class FileAdapter(private var context: Context) :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
     private var files = emptyList<FileModel>() // Cached copy of words
     private var infoFiles = emptyList<InfoModel>() // Cached copy of words
     private var expandedPositon = -1
+    private var clipBoard: ClipBoard = ClipBoard(context)
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just a string in this case that is shown in a TextView.
-    class MyViewHolder(val linearLayout: LinearLayout) :
-        RecyclerView.ViewHolder(linearLayout)
-
+    class MyViewHolder(val linearLayout: LinearLayout) : RecyclerView.ViewHolder(linearLayout)
 
     // Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         // create a new view
-
-
-//        val constraintlayout = LayoutInflater.from(parent.context)
-//            .inflate(R.layout.file_item_view, parent, false) as ConstraintLayout
-
-        val linearLayout = LayoutInflater.from(parent.context).inflate(R.layout.file_item_view, parent, false) as LinearLayout;
+        val linearLayout = LayoutInflater.from(parent.context)
+            .inflate(R.layout.file_item_view, parent, false) as LinearLayout;
         return MyViewHolder(linearLayout);
     }
 
@@ -64,6 +58,20 @@ class FileAdapter :
         fileTypeTextView.text = files[position].mime_type
         uploadDateTextView.text = files[position].date_uploaded
         handleExpand(holder, position)
+        setOnClickListener(holder, position, infoModel)
+    }
+
+    fun setOnClickListener(holder: MyViewHolder, position: Int, infoModel: InfoModel?) {
+       val downloadButton  = holder.linearLayout.findViewById<Button>(R.id.downloadButton);
+        downloadButton.setOnClickListener{
+            Toast.makeText(holder.linearLayout.context, "Download", Toast.LENGTH_LONG).show()
+        }
+
+        val copyButton = holder.linearLayout.findViewById<Button>(R.id.copyButton);
+        copyButton.setOnClickListener{
+            copyToClipBoard(infoModel);
+        }
+
     }
 
     fun setDetailVisibility(holder: MyViewHolder, position: Int) {
@@ -117,6 +125,18 @@ class FileAdapter :
         this.infoFiles = files
         notifyDataSetChanged()
     }
+
+    fun downloadFile(v: View?){
+        // Do Something
+        Log.e("test", v!!.tag.toString())
+    }
+
+    fun copyToClipBoard(infoModel: InfoModel?) {
+        if (infoModel !== null){
+        clipBoard.copyToClipBoard(infoModel.getFileUrl());
+        }
+    }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = files.size

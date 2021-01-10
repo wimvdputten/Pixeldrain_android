@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setRecyclerView() {
         viewManager = LinearLayoutManager(this)
-        viewAdapter = FileAdapter();
+        viewAdapter = FileAdapter(this);
 
         recyclerView = findViewById<RecyclerView>(R.id.file_recyclerView).apply {
             // use this setting to improve performance if you know that changes

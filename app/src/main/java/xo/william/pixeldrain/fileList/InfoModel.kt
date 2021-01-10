@@ -15,4 +15,8 @@ data class InfoModel(var id: String) {
     fun getThumbnailUrl(): String {
         return baseUrl + thumbnail_href;
     }
+
+    fun getFileUrl():String {
+        return  "${baseUrl}/file/${id}"
+    }
 }
