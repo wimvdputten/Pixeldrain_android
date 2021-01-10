@@ -106,11 +106,11 @@
             android:padding="0dp"
             android:text="COPY"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button6"
+            app:layout_constraintEnd_toStartOf="@+id/shareButton"
             app:layout_constraintStart_toEndOf="@+id/downloadButton" />
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/shareButton"
             style="@style/Widget.AppCompat.Button.Borderless.Colored.inset"
             android:layout_width="0dp"
             android:layout_height="25dp"

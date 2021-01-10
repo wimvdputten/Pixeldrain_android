@@ -1,6 +1,7 @@
 package xo.william.pixeldrain.fileList
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -72,6 +73,11 @@ class FileAdapter(private var context: Context) :
             copyToClipBoard(infoModel);
         }
 
+        val shareButton  = holder.linearLayout.findViewById<Button>(R.id.shareButton);
+        shareButton.setOnClickListener{
+            shareUrl(infoModel);
+        }
+
     }
 
     fun setDetailVisibility(holder: MyViewHolder, position: Int) {
@@ -134,6 +140,16 @@ class FileAdapter(private var context: Context) :
     fun copyToClipBoard(infoModel: InfoModel?) {
         if (infoModel !== null){
         clipBoard.copyToClipBoard(infoModel.getFileUrl());
+        }
+    }
+
+    fun shareUrl(infoModel: InfoModel?){
+        if (infoModel !== null){
+            val intent: Intent = Intent()
+                .setType("text/plain")
+                .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT, "Checkout this file on Pixeldrain: ${infoModel.getFileUrl()}")
+            val shareIntent = Intent.createChooser(intent, "Share");
+            context.startActivity(shareIntent);
         }
     }
 
