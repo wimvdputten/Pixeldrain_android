@@ -1,5 +1,6 @@
 package xo.william.pixeldrain
 
+import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -7,9 +8,11 @@ import android.os.Handler
 import android.provider.MediaStore.MediaColumns.DISPLAY_NAME
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import xo.william.pixeldrain.fileList.FileAdapter
 import xo.william.pixeldrain.model.FileViewModel
-
+import kotlinx.android.synthetic.main.activity_main.*
+import xo.william.pixeldrain.R.id.action_login
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -123,5 +128,19 @@ class MainActivity : AppCompatActivity() {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.main_toolbar, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        action_login -> {
+            openLoginActivity()
+            true;
+        }
+        else ->  super.onOptionsItemSelected(item);
+    }
+
+    fun openLoginActivity(){
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+
     }
 }

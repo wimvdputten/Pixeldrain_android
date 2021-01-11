@@ -32,7 +32,6 @@
         app:logo="@drawable/text_logo"
         app:logoDescription="Pixeldrain"
         app:menu="@menu/main_toolbar"
-        app:navigationIcon="@drawable/outline_menu_black_18dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/app_name" />
 

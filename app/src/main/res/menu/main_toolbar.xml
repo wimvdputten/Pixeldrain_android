@@ -5,26 +5,15 @@
     android:layout_height="match_parent">
 
     <item
+        android:id="@+id/action_login"
+        android:title="login"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/twotone_search_black_18dp"
         android:title="search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="ifRoom|collapseActionView" />
-
-    <item
-        android:id="@+id/action_login"
-        android:title="login"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/upload"
-        android:title="upload"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_settings"
-        android:title="settings"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 
 
 </menu>
