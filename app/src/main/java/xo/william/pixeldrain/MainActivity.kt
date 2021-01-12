@@ -1,6 +1,5 @@
 package xo.william.pixeldrain
 
-import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,7 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,20 +19,22 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import xo.william.pixeldrain.fileList.FileAdapter
 import xo.william.pixeldrain.model.FileViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import xo.william.pixeldrain.R.id.action_login
-import kotlin.math.log
+import xo.william.pixeldrain.repository.SharedRepository
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: FileAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var fileViewModel: FileViewModel;
-
+    private lateinit var sharedRepository: SharedRepository;
+    private lateinit var loginButtonRef:MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        sharedRepository = SharedRepository(this);
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.main_toolbar));
         setRecyclerView();
@@ -91,6 +91,11 @@ class MainActivity : AppCompatActivity() {
             val selectedFile = data?.data //The uri with the location of the file
             startUpload(selectedFile)
         }
+
+        if (resultCode == 200){
+            loginButtonRef.title = "Logout";
+            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun startUpload(selectedFile: Uri?) {
@@ -127,20 +132,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.main_toolbar, menu)
+
+        loginButtonRef = menu.findItem(action_login);
+        if (sharedRepository.isUserLogedIn()){
+            menu.findItem(action_login).title = "Logout";
+        }else{
+            menu.findItem(action_login).title = "Login";
+        }
+
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         action_login -> {
-            openLoginActivity()
+            if (sharedRepository.isUserLogedIn()){
+                sharedRepository.deleteToken();
+                item.title = "Login";
+                Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+            }else{
+                openLoginActivity()
+            }
             true;
         }
+
         else ->  super.onOptionsItemSelected(item);
     }
 
     fun openLoginActivity(){
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-
+        startActivityForResult(intent, 200)
     }
+
 }

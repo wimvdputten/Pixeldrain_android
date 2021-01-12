@@ -14,8 +14,9 @@ import xo.william.pixeldrain.repository.SharedRepository
 
 class LoginActivity : AppCompatActivity() {
 
-    var username = "";
-    var password = "";
+    private var username = "";
+    private var password = "";
+
     private lateinit var loginViewModel: LoginViewModel;
     private lateinit var sharedRepository: SharedRepository;
 
@@ -36,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
             loginButton.isEnabled = (username.isNotEmpty() && password.isNotEmpty());
         }
 
-
         loginButton.setOnClickListener {
             loginButton.isEnabled = false;
             loginProgress.visibility = View.VISIBLE
@@ -50,15 +50,14 @@ class LoginActivity : AppCompatActivity() {
 
     fun handleLoginResponse(response: LoginResponse) {
         loginProgress.visibility = View.GONE;
-        if(response.auth_key.isNotEmpty()){
-            Toast.makeText(this, "succes: ${response.succes}", Toast.LENGTH_LONG).show()
+        if (response.auth_key.isNotEmpty()) {
             sharedRepository.saveToken(response.auth_key);
-            //close activity
-        }else{
+            setResult(200)
+            finish();
+        } else {
             loginButton.isEnabled = true;
-            Toast.makeText(this, "er: ${response.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error: ${response.message}", Toast.LENGTH_LONG).show()
         }
-
     }
 
 }
