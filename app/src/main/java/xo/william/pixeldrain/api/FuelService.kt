@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.BlobDataPart
 import com.github.kittinunf.fuel.core.Method
+import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.requests.UploadRequest
 import com.github.kittinunf.fuel.httpGet
 
@@ -58,5 +59,10 @@ class FuelService() {
         Log.d("response", "url: " + url + " " + fileName);
         return Fuel.upload(url, method = Method.POST, parameters = listOf("name" to setFileName))
             .add(BlobDataPart(selectedFile, name = "file", filename = setFileName));
+    }
+
+    fun loginUser(username: String, password: String): Request {
+        val url ="${baseUri}/user/login"
+        return Fuel.post(url, parameters = listOf("username" to username, "password" to password));
     }
 }
