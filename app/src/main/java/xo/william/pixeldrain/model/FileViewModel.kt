@@ -46,10 +46,10 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */
-    fun uploadPost(stream: InputStream?, fileName: String?, callback: ((String) -> Unit)) =
+    fun uploadAnonPost(stream: InputStream?, fileName: String?, callback: ((String) -> Unit)) =
         viewModelScope.launch(Dispatchers.IO) {
             if (stream !== null) {
-                repository.uploadPost(stream, fileName)
+                repository.uploadAnonPost(stream, fileName)
                     .responseString { request, response, result ->
                         when (result) {
                             is Result.Success -> {
@@ -71,6 +71,39 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
 
         }
 
+    /**
+     * Launching a new coroutine to insert the data in a non-blocking way
+     */
+    fun uploadPost(stream: InputStream?, fileName: String?, authKey: String, callback: ((String) -> Unit)) =
+        viewModelScope.launch(Dispatchers.IO) {
+            if (stream !== null) {
+                repository.uploadPost(stream, fileName, authKey)
+                    .interrupt { Log.d("response", "interupted")  }
+                    .responseString() { request, response, result ->
+                        when (result) {
+                            is Result.Success -> {
+                                val data = result.get()
+                                Log.d("response", "data: " + data);
+                                Log.d("response", "code: ${response.statusCode}")
+                                val file = format.decodeFromString<InfoModel>(data);
+                                callback("Succes: " + file.id + " added");
+                            }
+
+                            is Result.Failure -> {
+                                val ex = result.getException()
+                                Log.d("response", "error code: ${response.statusCode}")
+                                Log.d("response", "error: ${ ex.message}")
+                                if (response.statusCode == 401){
+                                    // TODO Handle unauthorized
+                                }
+
+                                callback("Something went wrong: " + ex.message);
+                            }
+                        }
+                    }
+            }
+
+        }
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */

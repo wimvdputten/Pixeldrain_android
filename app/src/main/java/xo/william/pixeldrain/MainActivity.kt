@@ -115,7 +115,12 @@ class MainActivity : AppCompatActivity() {
                     cursor.close();
                 }
                 val stream = contentResolver.openInputStream(selectedFile);
-                fileViewModel.uploadPost(stream, fileName, this::finishUpload);
+
+                if(sharedRepository.isUserLogedIn()){
+                    fileViewModel.uploadPost(stream, fileName, sharedRepository.getAuthKey(),this::finishUpload);
+                }else{
+                    fileViewModel.uploadAnonPost(stream, fileName, this::finishUpload);
+                }
         }
     }
 

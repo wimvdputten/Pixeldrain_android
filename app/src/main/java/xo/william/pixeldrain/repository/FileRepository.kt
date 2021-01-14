@@ -42,8 +42,13 @@ class FileRepository(private val fileDao: FileDao) {
         fileDao.insert(file)
     }
 
-    fun uploadPost(selectedFile: InputStream, fileName: String?): UploadRequest {
-      return   fuelService.uploadFile(selectedFile, fileName)
+    fun uploadAnonPost(selectedFile: InputStream, fileName: String?): UploadRequest {
+      return   fuelService.uploadAnonFile(selectedFile, fileName)
+    }
+
+    fun uploadPost(selectedFile: InputStream, fileName: String?, authKey: String): UploadRequest {
+        return   fuelService.uploadFile(selectedFile, fileName, authKey);
+
     }
 
     /**
