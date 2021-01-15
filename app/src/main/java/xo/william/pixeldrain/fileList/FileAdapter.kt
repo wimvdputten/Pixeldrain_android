@@ -51,7 +51,7 @@ class FileAdapter(private var context: Context) :
         loadImage(infoModel, holder);
         nameTextView.text = infoModel.name;
         fileTypeTextView.text = loadedFiles[position].mime_type
-        uploadDateTextView.text = loadedFiles[position].date_uploaded
+        uploadDateTextView.text = loadedFiles[position].date_upload
 
 
         setDetailVisibility(holder, position);
@@ -120,7 +120,7 @@ class FileAdapter(private var context: Context) :
     }
 
     internal fun setFiles(files: List<InfoModel>) {
-        this.loadedFiles = files;
+        this.loadedFiles = files.sortedByDescending { it.date_upload }
         notifyDataSetChanged()
     }
 

@@ -13,7 +13,7 @@ data class InfoModel(var id: String) {
     val baseUrl = "https://pixeldrain.com/api"
     val name = "";
     val mime_type = "";
-    val date_uploaded = "";
+    val date_upload = "";
 
     fun getThumbnailUrl(): String {
         return baseUrl + thumbnail_href;
