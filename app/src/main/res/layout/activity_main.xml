@@ -67,4 +67,15 @@
         app:maxImageSize="48dp"
         app:srcCompat="@drawable/icon" />
 
+    <TextView
+        android:id="@+id/initText"
+        android:layout_width="215dp"
+        android:layout_height="38dp"
+        android:text="No files found, try uploading some"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/file_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/file_recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

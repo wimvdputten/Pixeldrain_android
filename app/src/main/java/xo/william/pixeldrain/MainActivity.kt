@@ -17,9 +17,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
+import xo.william.pixeldrain.R.id.*
 import xo.william.pixeldrain.fileList.FileAdapter
 import xo.william.pixeldrain.model.FileViewModel
-import xo.william.pixeldrain.R.id.action_login
 import xo.william.pixeldrain.repository.SharedRepository
 
 class MainActivity : AppCompatActivity() {
@@ -46,14 +46,18 @@ class MainActivity : AppCompatActivity() {
             this,
             Observer { files -> files?.let {
                     if (files.size > 0){
-                        stopProgress()
+                        stopProgress(false)
                     }
+
                 viewAdapter.setFiles(files);
             } })
 
         fileViewModel.dbFiles.observe(
             this,
             Observer { files -> files?.let {
+                if (it.isEmpty() && !sharedRepository.isUserLogedIn()){
+                    stopProgress(true);
+                }
                 fileViewModel.loadFiles(it);
             } })
 
@@ -62,8 +66,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun stopProgress() {
+    fun stopProgress(empty: Boolean) {
         initProgress.visibility = View.GONE;
+        if (empty){
+            initText.visibility = View.VISIBLE;
+        }else{
+            initText.visibility = View.GONE;
+        }
     }
 
     fun setRecyclerView() {

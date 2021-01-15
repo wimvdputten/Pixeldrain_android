@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.CoroutineScope
 
 // Annotates class to be a Room Database with a table (entity) of the Word class
-@Database(entities = arrayOf(File::class), version = 2, exportSchema = false)
+@Database(entities = arrayOf(File::class), version = 3, exportSchema = false)
 public abstract class AppDatabase : RoomDatabase() {
 
     abstract fun fileDao(): FileDao
@@ -31,10 +31,12 @@ public abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "file_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance
             }
+
         }
+
     }
 }

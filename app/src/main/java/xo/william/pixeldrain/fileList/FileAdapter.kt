@@ -115,8 +115,6 @@ class FileAdapter(private var context: Context) :
             progressBar.visibility = View.GONE
             Log.e("loadImage", "error: " + infoModel.getThumbnailUrl() + "  " + e.message)
         }
-
-
     }
 
     internal fun setFiles(files: List<InfoModel>) {

@@ -63,7 +63,7 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                                 val data = result.get()
                                 Log.d("response", "data: " + data);
                                 val file = format.decodeFromString<InfoModel>(data);
-                                val dbFile = File(file.id, fileName + "", "mime", "asd", 666)
+                                val dbFile = File(file.id)
                                 insert(dbFile);
                                 callback("Succes: " + file.id + " added");
                             }
@@ -94,10 +94,10 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                     .responseString() { request, response, result ->
                         when (result) {
                             is Result.Success -> {
-                                val data = result.get()
-                                Log.d("response", "data: " + data);
-                                Log.d("response", "code: ${response.statusCode}")
-                                val file = format.decodeFromString<InfoModel>(data);
+                                val file = format.decodeFromString<InfoModel>(result.get());
+                                //add uloaded file to loadedFiles list
+                                repository.loadFileInfo(File(file.id), loadedFiles);
+
                                 callback("Succes: " + file.id + " added");
                             }
 
