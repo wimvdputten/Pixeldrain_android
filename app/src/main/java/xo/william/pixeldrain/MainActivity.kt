@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore.MediaColumns.DISPLAY_NAME
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -12,6 +13,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -168,6 +170,25 @@ class MainActivity : AppCompatActivity() {
             menu.findItem(action_login).title = "Login";
         }
 
+        val searchItem = menu.findItem(action_search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Log.d("search", "text ${query}")
+                viewAdapter.searchFiles(query)
+                return false
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+        })
+
+        searchView.setOnCloseListener {
+            viewAdapter.searchFiles(null)
+            false
+        }
+
         return true
     }
 
@@ -182,7 +203,6 @@ class MainActivity : AppCompatActivity() {
             }
             true;
         }
-
         else ->  super.onOptionsItemSelected(item);
     }
 

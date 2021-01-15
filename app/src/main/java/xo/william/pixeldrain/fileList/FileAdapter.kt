@@ -18,6 +18,7 @@ class FileAdapter(private var context: Context) :
 
 
     private var loadedFiles = emptyList<InfoModel>() // Cached copy of words
+    private var loadedFilesHolder = emptyList<InfoModel>() // Cached copy of words
 
     private var expandedPositon = -1
     private var clipBoard: ClipBoard = ClipBoard(context)
@@ -119,6 +120,7 @@ class FileAdapter(private var context: Context) :
 
     internal fun setFiles(files: List<InfoModel>) {
         this.loadedFiles = files.sortedByDescending { it.date_upload }
+        this.loadedFilesHolder = loadedFiles;
         notifyDataSetChanged()
     }
 
@@ -138,7 +140,18 @@ class FileAdapter(private var context: Context) :
         }
     }
 
+    fun searchFiles(query: String?) {
+        if (query !== null){
+            loadedFiles = loadedFilesHolder.filter { it.name.contains(query, ignoreCase = true) }
+        } else{
+            loadedFiles = loadedFilesHolder;
+        }
+
+        notifyDataSetChanged()
+    }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = loadedFiles.size
+
+
 }
