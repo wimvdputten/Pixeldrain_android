@@ -9,6 +9,16 @@
     tools:menu="@menu/main_toolbar">
 
     <ProgressBar
+        android:id="@+id/initProgress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="179dp"
+        android:layout_height="194dp"
+        app:layout_constraintBottom_toBottomOf="@+id/file_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/file_recyclerView"
+        app:layout_constraintStart_toStartOf="@+id/file_recyclerView"
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar" />
+
+    <ProgressBar
         android:id="@+id/main_progress"
         style="?android:attr/progressBarStyle"
         android:layout_width="75dp"

@@ -45,6 +45,9 @@ class MainActivity : AppCompatActivity() {
         fileViewModel.loadedFiles.observe(
             this,
             Observer { files -> files?.let {
+                    if (files.size > 0){
+                        stopProgress()
+                    }
                 viewAdapter.setFiles(files);
             } })
 
@@ -57,6 +60,10 @@ class MainActivity : AppCompatActivity() {
         main_actionButton.setOnClickListener {
             this.handleActionButton()
         }
+    }
+
+    fun stopProgress() {
+        initProgress.visibility = View.GONE;
     }
 
     fun setRecyclerView() {
