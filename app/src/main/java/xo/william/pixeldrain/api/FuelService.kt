@@ -3,10 +3,7 @@ package xo.william.pixeldrain.api
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.BlobDataPart
-import com.github.kittinunf.fuel.core.Headers
-import com.github.kittinunf.fuel.core.Method
-import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.requests.UploadRequest
 import com.github.kittinunf.fuel.core.requests.upload
 import com.github.kittinunf.fuel.httpGet
@@ -53,6 +50,11 @@ class FuelService() {
         }
     }
 
+    fun getFileInfoById(id: String): Request {
+        val url = "${baseUri}file/${id}/info";
+        return Fuel.get(url)
+    }
+
     fun uploadAnonFile(selectedFile: InputStream, fileName: String?): UploadRequest {
         val url = baseUri + "file";
         val setFileName = if (fileName !== null) fileName else "file";
@@ -73,8 +75,18 @@ class FuelService() {
             .add(BlobDataPart(selectedFile, name = "file", filename = setFileName))
     }
 
+    fun getFiles(authKey: String): Request {
+        val url = "${baseUri}/user/files"
+        val authKeyCookie = "${authKeyCookie}=${authKey}";
+
+        return Fuel.get(url, parameters = listOf("page" to 0, "limit" to 1000))
+            .header(Headers.COOKIE to authKeyCookie)
+    }
+
     fun loginUser(username: String, password: String): Request {
         val url ="${baseUri}/user/login"
         return Fuel.post(url, parameters = listOf("username" to username, "password" to password));
     }
+
+
 }

@@ -11,36 +11,43 @@ import kotlinx.serialization.json.Json
 import xo.william.pixeldrain.database.AppDatabase
 import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.database.FileDao
-import xo.william.pixeldrain.fileList.FileModel
 import xo.william.pixeldrain.fileList.InfoModel
 import xo.william.pixeldrain.repository.FileRepository
+import xo.william.pixeldrain.repository.SharedRepository
 import java.io.InputStream
 
 class FileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val format = Json { ignoreUnknownKeys = true }
-    private val repository: FileRepository
-
-    // Using LiveData and caching what getAlphabetizedWords returns has several benefits:
-    // - We can put an observer on the data (instead of polling for changes) and only update the
-    //   the UI when the data actually changes.
-    // - Repository is completely separated from the UI through the ViewModel.
-    val allFiles: LiveData<List<FileModel>>
+    private val repository: FileRepository;
+    private var sharedRepository: SharedRepository = SharedRepository(application);
     private val fileDao: FileDao = AppDatabase.getDatabase(application, viewModelScope).fileDao()
 
-    private var _infoFiles: MutableLiveData<MutableList<InfoModel>> = MutableLiveData();
-    val infoFiles: LiveData<MutableList<InfoModel>>
+    val loadedFiles: MutableLiveData<MutableList<InfoModel>> = MutableLiveData(mutableListOf<InfoModel>())
+    val dbFiles: LiveData<List<File>>
+
     init {
         repository = FileRepository(fileDao)
-        allFiles = repository.allFiles
-        infoFiles = this.setInfoFiles();
+        dbFiles = repository.getDatabaseFiles();
+        loadFilesFromApi(loadedFiles);
     }
 
-    private fun setInfoFiles(): LiveData<MutableList<InfoModel>> {
-        return Transformations.switchMap(allFiles) { files ->
-            repository.setInfoFiles(_infoFiles, files);
+    fun loadFiles(list: List<File>) = viewModelScope.launch(Dispatchers.IO) {
+       list.forEach {
+           repository.loadFileInfo(it, loadedFiles);
+       }
+    }
+
+    fun loadFilesFromApi(loadedFiles: MutableLiveData<MutableList<InfoModel>>) = viewModelScope.launch(Dispatchers.IO) {
+        if (sharedRepository.isUserLogedIn()){
+            repository.loadApiFiles(loadedFiles, sharedRepository.getAuthKey())
         }
     }
+
+    fun setSharedResponse(sharedRepository: SharedRepository) {
+        this.sharedRepository = sharedRepository;
+    }
+
 
 
     /**
@@ -74,11 +81,16 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */
-    fun uploadPost(stream: InputStream?, fileName: String?, authKey: String, callback: ((String) -> Unit)) =
+    fun uploadPost(
+        stream: InputStream?,
+        fileName: String?,
+        authKey: String,
+        callback: ((String) -> Unit),
+    ) =
         viewModelScope.launch(Dispatchers.IO) {
             if (stream !== null) {
                 repository.uploadPost(stream, fileName, authKey)
-                    .interrupt { Log.d("response", "interupted")  }
+                    .interrupt { Log.d("response", "interupted") }
                     .responseString() { request, response, result ->
                         when (result) {
                             is Result.Success -> {
@@ -92,8 +104,8 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                             is Result.Failure -> {
                                 val ex = result.getException()
                                 Log.d("response", "error code: ${response.statusCode}")
-                                Log.d("response", "error: ${ ex.message}")
-                                if (response.statusCode == 401){
+                                Log.d("response", "error: ${ex.message}")
+                                if (response.statusCode == 401) {
                                     // TODO Handle unauthorized
                                 }
 
@@ -104,6 +116,7 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
             }
 
         }
+
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */

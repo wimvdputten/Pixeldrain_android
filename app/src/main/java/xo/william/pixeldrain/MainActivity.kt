@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedRepository: SharedRepository;
     private lateinit var loginButtonRef:MenuItem
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -39,14 +40,19 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.main_toolbar));
         setRecyclerView();
         fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
-        fileViewModel.allFiles.observe(
-            this,
-            Observer { files -> files?.let { viewAdapter.setFiles(it) } })
+        fileViewModel.setSharedResponse(sharedRepository);
 
-        fileViewModel.infoFiles.observe(
+        fileViewModel.loadedFiles.observe(
             this,
-            Observer { infoModel -> infoModel?.let { viewAdapter.updateTitle(infoModel) } }
-        )
+            Observer { files -> files?.let {
+                viewAdapter.setFiles(files);
+            } })
+
+        fileViewModel.dbFiles.observe(
+            this,
+            Observer { files -> files?.let {
+                fileViewModel.loadFiles(it);
+            } })
 
         main_actionButton.setOnClickListener {
             this.handleActionButton()

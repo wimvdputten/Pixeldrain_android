@@ -15,8 +15,10 @@ import xo.william.pixeldrain.repository.ClipBoard
 
 class FileAdapter(private var context: Context) :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
-    private var files = emptyList<FileModel>() // Cached copy of words
-    private var infoFiles = emptyList<InfoModel>() // Cached copy of words
+
+
+    private var loadedFiles = emptyList<InfoModel>() // Cached copy of words
+
     private var expandedPositon = -1
     private var clipBoard: ClipBoard = ClipBoard(context)
 
@@ -44,20 +46,15 @@ class FileAdapter(private var context: Context) :
         val uploadDateTextView =
             holder.linearLayout.findViewById<TextView>(R.id.UploadDateTextView)
 
+        val infoModel: InfoModel = loadedFiles[position];
+
+        loadImage(infoModel, holder);
+        nameTextView.text = infoModel.name;
+        fileTypeTextView.text = loadedFiles[position].mime_type
+        uploadDateTextView.text = loadedFiles[position].date_uploaded
+
+
         setDetailVisibility(holder, position);
-
-
-        val infoModel: InfoModel? =
-            infoFiles.find { infoModel ->   if (!infoModel.equals(null)) infoModel.id.equals(files[position].id) else false }
-        if (infoModel !== null) {
-            loadImage(infoModel, holder)
-            val text = infoModel.id + " (" + infoModel.views + ") "
-            nameTextView.text = infoModel.thumbnail_href
-        } else {
-            nameTextView.text = files[position].name
-        }
-        fileTypeTextView.text = files[position].mime_type
-        uploadDateTextView.text = files[position].date_uploaded
         handleExpand(holder, position)
         setOnClickListener(holder, position, infoModel)
     }
@@ -122,24 +119,14 @@ class FileAdapter(private var context: Context) :
 
     }
 
-    internal fun setFiles(files: List<FileModel>) {
-        this.files = files
+    internal fun setFiles(files: List<InfoModel>) {
+        this.loadedFiles = files;
         notifyDataSetChanged()
-    }
-
-    internal fun updateTitle(files: List<InfoModel>) {
-        this.infoFiles = files
-        notifyDataSetChanged()
-    }
-
-    fun downloadFile(v: View?){
-        // Do Something
-        Log.e("test", v!!.tag.toString())
     }
 
     fun copyToClipBoard(infoModel: InfoModel?) {
-        if (infoModel !== null){
-        clipBoard.copyToClipBoard(infoModel.getFileUrl());
+        if (infoModel !== null) {
+            clipBoard.copyToClipBoard(infoModel.getFileUrl());
         }
     }
 
@@ -155,5 +142,5 @@ class FileAdapter(private var context: Context) :
 
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = files.size
+    override fun getItemCount() = loadedFiles.size
 }

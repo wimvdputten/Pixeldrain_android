@@ -1,41 +1,27 @@
 package xo.william.pixeldrain.repository
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.github.kittinunf.fuel.core.requests.UploadRequest
 import xo.william.pixeldrain.api.FuelService
 import xo.william.pixeldrain.database.File
 import xo.william.pixeldrain.database.FileDao
-import xo.william.pixeldrain.fileList.FileModel
 import xo.william.pixeldrain.fileList.InfoModel
+import com.github.kittinunf.result.Result
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import xo.william.pixeldrain.fileList.InfoModelList
 import java.io.InputStream
 
-// Declares the DAO as a private property in the constructor. Pass in the DAO
-// instead of the whole database, because you only need access to the DAO
 class FileRepository(private val fileDao: FileDao) {
 
-
-
     // Room executes all queries on a separate thread.
-    val allFiles: LiveData<List<FileModel>> = this.getAllFileModels();
+
     private val fuelService = FuelService();
+    private val format = Json { ignoreUnknownKeys = true }
 
-    fun getAllFileModels(): LiveData<List<FileModel>> {
-        val liveDataFiles = fileDao.getAll();
-        val modelFiles = Transformations.map(liveDataFiles) { files ->
-            return@map files.map { file: File ->
-                return@map transformDBfile(file);
-            }
-        }
-        return modelFiles;
-    }
-
-    fun transformDBfile(file: File): FileModel {
-        val fileModel = FileModel();
-        fileModel.id = file.id;
-        fileModel.name = file.fileName;
-        fileModel.mime_type = file.mimeType;
-        fileModel.date_uploaded = file.dateUpload;
-        return fileModel;
+    fun getDatabaseFiles(): LiveData<List<File>> {
+        return fileDao.getAll();
     }
 
     suspend fun insert(file: File) {
@@ -51,16 +37,37 @@ class FileRepository(private val fileDao: FileDao) {
 
     }
 
-    /**
-     * Launching a new coroutine to insert the data in a non-blocking way
-     */
-
-    fun setInfoFiles(_infoFiles: MutableLiveData<MutableList<InfoModel>>, files: List<FileModel>):
-            MutableLiveData<MutableList<InfoModel>> {
-        for (file in files) {
-            fuelService.setInfoData(_infoFiles, file.id);
+    fun loadFileInfo(file: File, loadedFiles: MutableLiveData<MutableList<InfoModel>>) {
+        fuelService.getFileInfoById(file.id).responseString{request, response, result ->
+            when (result){
+                is Result.Success -> {
+                    val infoFile = format.decodeFromString<InfoModel>(result.get());
+                    loadedFiles.value?.add(infoFile);
+                    loadedFiles.postValue(loadedFiles.value);
+                }
+                is Result.Failure ->{
+                    Log.d("response", "error: " + result.error.exception.message);
+                }
+            }
         }
-        return _infoFiles;
     }
 
+    fun loadApiFiles(loadedFiles: MutableLiveData<MutableList<InfoModel>>, authKey: String) {
+        fuelService.getFiles(authKey).responseString(){ _, response, result ->
+                when(result){
+                    is Result.Success -> {
+                         val infoModelList = format.decodeFromString<InfoModelList>(result.get())
+                        loadedFiles.value?.addAll(infoModelList.files)
+                        loadedFiles.postValue(loadedFiles.value)
+                    }
+                    is Result.Failure -> {
+                        if (response.statusCode == 401) {
+                            // TODO Handle unauthorized
+                        }
+
+                        Log.d("response", "error: " + result.error.exception.message);
+                    }
+                }
+            };
+    }
 }

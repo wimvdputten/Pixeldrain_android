@@ -1,11 +1,21 @@
 package xo.william.pixeldrain.repository
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 
-class SharedRepository(activity: Activity) {
-    val sharedPreferences = activity.getSharedPreferences("default", Context.MODE_PRIVATE);
+class SharedRepository {
+    private val sharedPreferences: SharedPreferences
     private var tokenPath = "token_path";
+
+    constructor(activity: Activity) {
+        sharedPreferences = activity.getSharedPreferences("default", Context.MODE_PRIVATE);
+    }
+
+    constructor(activity: Application) {
+        sharedPreferences = activity.getSharedPreferences("default", Context.MODE_PRIVATE);
+    }
 
     fun saveToken(token: String) {
         with(sharedPreferences.edit()) {
