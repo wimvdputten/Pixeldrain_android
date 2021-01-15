@@ -116,6 +116,7 @@ class MainActivity : AppCompatActivity() {
 
         if (resultCode == 200){
             loginButtonRef.title = "Logout";
+            fileViewModel.loadFilesFromApi(loadedFiles = fileViewModel.loadedFiles);
             Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
         }
     }
