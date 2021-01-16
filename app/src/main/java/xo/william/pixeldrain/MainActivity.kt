@@ -209,6 +209,11 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        action_register ->{
+            openNewTabWindow()
+            true
+        }
+
         else ->  super.onOptionsItemSelected(item)
     }
 
@@ -217,4 +222,12 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, 200)
     }
 
+    fun openNewTabWindow() {
+        val uris = Uri.parse("https://pixeldrain.com/register")
+        val intents = Intent(Intent.ACTION_VIEW, uris)
+        val b = Bundle()
+        b.putBoolean("new_window", true)
+        intents.putExtras(b)
+        this.startActivity(intents)
+    }
 }
