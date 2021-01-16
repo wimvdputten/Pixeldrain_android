@@ -14,7 +14,7 @@ data class InfoModel(var id: String) {
     val name = "";
     val mime_type = "";
     val date_upload = "";
-
+    val can_edit = false
     fun getThumbnailUrl(): String {
         return baseUrl + thumbnail_href;
     }

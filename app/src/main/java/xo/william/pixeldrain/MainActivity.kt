@@ -40,9 +40,9 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.main_toolbar))
-        setRecyclerView()
         fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
         fileViewModel.setSharedResponse(sharedRepository)
+        setRecyclerView()
 
         fileViewModel.loadedFiles.observe(
             this,
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setRecyclerView() {
         viewManager = LinearLayoutManager(this)
-        viewAdapter = FileAdapter(this)
+        viewAdapter = FileAdapter(this, fileViewModel)
 
         recyclerView = findViewById<RecyclerView>(R.id.file_recyclerView).apply {
             // use this setting to improve performance if you know that changes

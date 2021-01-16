@@ -1,5 +1,6 @@
 package xo.william.pixeldrain.fileList
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -11,9 +12,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import xo.william.pixeldrain.R
+import xo.william.pixeldrain.model.FileViewModel
 import xo.william.pixeldrain.repository.ClipBoard
 
-class FileAdapter(private var context: Context) :
+class FileAdapter(private var context: Context, fileViewModel: FileViewModel) :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
 
 
@@ -61,30 +63,35 @@ class FileAdapter(private var context: Context) :
 
         setDetailVisibility(holder, position);
         handleExpand(holder, position)
-        setOnClickListener(holder, position, infoModel)
+        setOnClickListener(holder, infoModel)
     }
 
-    fun setOnClickListener(holder: MyViewHolder, position: Int, infoModel: InfoModel?) {
-       val downloadButton  = holder.linearLayout.findViewById<Button>(R.id.downloadButton);
-        downloadButton.setOnClickListener{
+    private fun setOnClickListener(holder: MyViewHolder, infoModel: InfoModel) {
+
+        val downloadButton = holder.linearLayout.findViewById<Button>(R.id.downloadButton);
+        downloadButton.setOnClickListener {
             Toast.makeText(holder.linearLayout.context, "Download", Toast.LENGTH_LONG).show()
         }
 
         val copyButton = holder.linearLayout.findViewById<Button>(R.id.copyButton);
-        copyButton.setOnClickListener{
+        copyButton.setOnClickListener {
             copyToClipBoard(infoModel);
         }
 
-        val shareButton  = holder.linearLayout.findViewById<Button>(R.id.shareButton);
-        shareButton.setOnClickListener{
+        val shareButton = holder.linearLayout.findViewById<Button>(R.id.shareButton);
+        shareButton.setOnClickListener {
             shareUrl(infoModel);
         }
-
+        val deleteButton = holder.linearLayout.findViewById<Button>(R.id.deleteButton)
+        deleteButton.setOnClickListener {
+            openDeleteFileAlert(infoModel)
+        }
     }
 
     fun setDetailVisibility(holder: MyViewHolder, position: Int) {
         val isExpanded = this.expandedPositon == position;
-        val detailItemLayout = holder.linearLayout.findViewById<ConstraintLayout>(R.id.detailItemLayout);
+        val detailItemLayout =
+            holder.linearLayout.findViewById<ConstraintLayout>(R.id.detailItemLayout);
 
         if (isExpanded) {
             detailItemLayout.visibility = View.VISIBLE
@@ -93,13 +100,14 @@ class FileAdapter(private var context: Context) :
         }
 
     }
+
     private fun handleExpand(holder: MyViewHolder, position: Int) {
         val mainItemLayout = holder.linearLayout.findViewById<ConstraintLayout>(R.id.mainItemLayout)
         val isExpanded: Boolean = position == this.expandedPositon
-        mainItemLayout.setOnClickListener{
-            if (isExpanded){
+        mainItemLayout.setOnClickListener {
+            if (isExpanded) {
                 this.expandedPositon = -1;
-            }else{
+            } else {
                 this.expandedPositon = position;
             }
 
@@ -112,7 +120,7 @@ class FileAdapter(private var context: Context) :
         val progressBar =
             holder.linearLayout.findViewById<ProgressBar>(R.id.fileThumbnailLoader)
         try {
-        val urlString = infoModel.getThumbnailUrl()
+            val urlString = infoModel.getThumbnailUrl()
             Glide.with(holder.linearLayout).load(urlString).fitCenter().into(imageview)
 
             progressBar.visibility = View.GONE
@@ -134,8 +142,8 @@ class FileAdapter(private var context: Context) :
         }
     }
 
-    fun shareUrl(infoModel: InfoModel?){
-        if (infoModel !== null){
+    fun shareUrl(infoModel: InfoModel?) {
+        if (infoModel !== null) {
             val intent: Intent = Intent()
                 .setType("text/plain")
                 .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT,
@@ -146,13 +154,39 @@ class FileAdapter(private var context: Context) :
     }
 
     fun searchFiles(query: String?) {
-        if (query !== null){
+        if (query !== null) {
             loadedFiles = loadedFilesHolder.filter { it.name.contains(query, ignoreCase = true) }
-        } else{
+        } else {
             loadedFiles = loadedFilesHolder;
         }
 
         notifyDataSetChanged()
+    }
+
+    fun openDeleteFileAlert(infoModel: InfoModel) {
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Are you sure you want to delete this file")
+        var message: String
+
+        if (infoModel.can_edit) {
+            message = "After deleting this file no one will be able to see it."
+        } else {
+            message = "Warning this file was uploaded anonymous. "
+            message += "This will only remove this file from the overview. "
+            message += "People with the link can still view the file."
+        }
+        builder.setMessage(message)
+
+        builder.setPositiveButton("Confirm") { dialog, which ->
+            // handle deleting
+        }
+
+        builder.setNeutralButton("Cancel") { _, _ ->
+            // Do nothing
+        }
+
+        builder.create().show()
     }
 
     // Return the size of your dataset (invoked by the layout manager)
