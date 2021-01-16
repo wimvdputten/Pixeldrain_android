@@ -25,8 +25,9 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="2dp"
             android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/fileThumbnail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.00999999"
@@ -38,16 +39,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nameTextView"
-            app:layout_constraintVertical_bias="0.0"
             tools:text="Filetype" />
 
         <TextView
-            android:id="@+id/UploadDateTextView"
+            android:id="@+id/viewsTextview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -58,11 +56,23 @@
             app:layout_constraintTop_toBottomOf="@+id/nameTextView"
             tools:text="Uploaded" />
 
+        <TextView
+            android:id="@+id/uploadDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="2dp"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fileTypeTextView"
+            tools:text="Uploaded" />
+
         <ImageView
             android:id="@+id/fileThumbnail"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginTop="5dp"
             android:contentDescription="FileThumbnail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

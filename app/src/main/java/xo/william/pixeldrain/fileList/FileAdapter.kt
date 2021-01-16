@@ -45,15 +45,19 @@ class FileAdapter(private var context: Context) :
         val nameTextView = holder.linearLayout.findViewById<TextView>(R.id.nameTextView)
         val fileTypeTextView = holder.linearLayout.findViewById<TextView>(R.id.fileTypeTextView)
         val uploadDateTextView =
-            holder.linearLayout.findViewById<TextView>(R.id.UploadDateTextView)
+            holder.linearLayout.findViewById<TextView>(R.id.uploadDateTextView)
+        val viewsTextView = holder.linearLayout.findViewById<TextView>(R.id.viewsTextview)
 
         val infoModel: InfoModel = loadedFiles[position];
 
         loadImage(infoModel, holder);
         nameTextView.text = infoModel.name;
         fileTypeTextView.text = loadedFiles[position].mime_type
-        uploadDateTextView.text = loadedFiles[position].date_upload
+        viewsTextView.text = "${loadedFiles[position].views} views";
 
+        //basic date formating
+        val formattedDate = loadedFiles[position].date_upload.substring(0, 16).replace("T", " ")
+        uploadDateTextView.text = formattedDate
 
         setDetailVisibility(holder, position);
         handleExpand(holder, position)
@@ -134,7 +138,8 @@ class FileAdapter(private var context: Context) :
         if (infoModel !== null){
             val intent: Intent = Intent()
                 .setType("text/plain")
-                .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT, "Checkout this file on Pixeldrain: ${infoModel.getFileUrl()}")
+                .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT,
+                    "Checkout this file on Pixeldrain: ${infoModel.getFileUrl()}")
             val shareIntent = Intent.createChooser(intent, "Share");
             context.startActivity(shareIntent);
         }
