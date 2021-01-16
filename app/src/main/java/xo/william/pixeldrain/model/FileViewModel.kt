@@ -123,4 +123,28 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     fun insert(file: File) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(file)
     }
+
+    fun deleteFile(infoModel: InfoModel, callback: (String) -> Unit) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteFromDb(infoModel.id)
+            if (infoModel.can_edit && sharedRepository.isUserLogedIn()) {
+                repository.deleteFromApi(infoModel.id, sharedRepository.getAuthKey())
+                    .response() { result ->
+                        when (result) {
+                            is Result.Success -> {
+                                repository.deleteFromLoadedFiles(infoModel.id, loadedFiles);
+                                callback("Deleted ${infoModel.name}")
+                            }
+                            is Result.Failure -> {
+                                val ex = result.getException()
+                                callback("Error: ${ex.exception.message}")
+                            }
+                        }
+                    }
+            } else {
+                repository.deleteFromLoadedFiles(infoModel.id, loadedFiles);
+                callback("Deleted ${infoModel.name}")
+            }
+
+        }
 }

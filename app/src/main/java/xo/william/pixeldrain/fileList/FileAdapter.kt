@@ -3,6 +3,7 @@ package xo.william.pixeldrain.fileList
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ import xo.william.pixeldrain.R
 import xo.william.pixeldrain.model.FileViewModel
 import xo.william.pixeldrain.repository.ClipBoard
 
-class FileAdapter(private var context: Context, fileViewModel: FileViewModel) :
+class FileAdapter(private var context: Context, private var fileViewModel: FileViewModel) :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
 
 
@@ -166,7 +167,7 @@ class FileAdapter(private var context: Context, fileViewModel: FileViewModel) :
     fun openDeleteFileAlert(infoModel: InfoModel) {
 
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Are you sure you want to delete this file")
+        builder.setTitle("Are you sure you want to delete ${infoModel.name}")
         var message: String
 
         if (infoModel.can_edit) {
@@ -179,7 +180,7 @@ class FileAdapter(private var context: Context, fileViewModel: FileViewModel) :
         builder.setMessage(message)
 
         builder.setPositiveButton("Confirm") { dialog, which ->
-            // handle deleting
+            fileViewModel.deleteFile(infoModel, this::showToast);
         }
 
         builder.setNeutralButton("Cancel") { _, _ ->
@@ -187,6 +188,13 @@ class FileAdapter(private var context: Context, fileViewModel: FileViewModel) :
         }
 
         builder.create().show()
+    }
+
+    fun showToast(message: String) {
+        val handler = Handler(context.mainLooper)
+        handler.post(Runnable {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        })
     }
 
     // Return the size of your dataset (invoked by the layout manager)

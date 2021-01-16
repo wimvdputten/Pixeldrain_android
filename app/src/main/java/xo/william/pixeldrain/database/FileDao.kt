@@ -20,6 +20,9 @@ interface FileDao {
     @Insert
     fun insert(vararg user: File)
 
+    @Query("DELETE FROM file WHERE id = (:id)")
+    fun deleteById(id: String)
+
     @Delete
     fun delete(user: File)
 }

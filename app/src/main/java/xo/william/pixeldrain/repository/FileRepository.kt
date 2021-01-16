@@ -2,6 +2,7 @@ package xo.william.pixeldrain.repository
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.requests.UploadRequest
 import xo.william.pixeldrain.api.FuelService
 import xo.william.pixeldrain.database.File
@@ -26,6 +27,10 @@ class FileRepository(private val fileDao: FileDao) {
 
     suspend fun insert(file: File) {
         fileDao.insert(file)
+    }
+
+    suspend fun deleteFromDb(id: String) {
+        return fileDao.deleteById(id);
     }
 
     fun uploadAnonPost(selectedFile: InputStream, fileName: String?): UploadRequest {
@@ -70,4 +75,18 @@ class FileRepository(private val fileDao: FileDao) {
                 }
             };
     }
+
+    fun deleteFromApi(id: String, authKey: String): Request {
+    return    fuelService.deleteFile(id,authKey)
+    }
+
+    fun deleteFromLoadedFiles(id: String, loadedFiles: MutableLiveData<MutableList<InfoModel>>) {
+        val loadedFilesValue = loadedFiles.value;
+        if (!loadedFilesValue.isNullOrEmpty()) {
+            loadedFilesValue.removeAll { it.id == id }
+            loadedFiles.postValue(loadedFilesValue)
+        }
+    }
+
+
 }

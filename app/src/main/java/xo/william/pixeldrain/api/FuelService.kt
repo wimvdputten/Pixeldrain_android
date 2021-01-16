@@ -88,5 +88,10 @@ class FuelService() {
         return Fuel.post(url, parameters = listOf("username" to username, "password" to password));
     }
 
+    fun deleteFile(id: String, authKey: String): Request {
+        val url ="${baseUri}/file/${id}"
+        val authKeyCookie = "${authKeyCookie}=${authKey}";
 
+        return Fuel.delete(url).header(Headers.COOKIE to authKeyCookie)
+    }
 }
