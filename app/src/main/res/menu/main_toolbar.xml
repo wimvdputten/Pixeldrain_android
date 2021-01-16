@@ -6,12 +6,17 @@
 
     <item
         android:id="@+id/action_login"
-        android:title="login"
+        android:title="Login"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_register"
+        android:title="Register"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/twotone_search_black_18dp"
-        android:title="search"
+        android:title="Search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
 

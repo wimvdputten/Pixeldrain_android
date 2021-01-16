@@ -28,21 +28,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: FileAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var fileViewModel: FileViewModel;
-    private lateinit var sharedRepository: SharedRepository;
+    private lateinit var fileViewModel: FileViewModel
+    private lateinit var sharedRepository: SharedRepository
     private lateinit var loginButtonRef:MenuItem
-
+    private lateinit var registerButton: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        sharedRepository = SharedRepository(this);
+        sharedRepository = SharedRepository(this)
 
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.main_toolbar));
-        setRecyclerView();
+        setSupportActionBar(findViewById(R.id.main_toolbar))
+        setRecyclerView()
         fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
-        fileViewModel.setSharedResponse(sharedRepository);
+        fileViewModel.setSharedResponse(sharedRepository)
 
         fileViewModel.loadedFiles.observe(
             this,
@@ -51,16 +51,16 @@ class MainActivity : AppCompatActivity() {
                         stopProgress(false)
                     }
 
-                viewAdapter.setFiles(files);
+                viewAdapter.setFiles(files)
             } })
 
         fileViewModel.dbFiles.observe(
             this,
             Observer { files -> files?.let {
                 if (it.isEmpty() && !sharedRepository.isUserLogedIn()){
-                    stopProgress(true);
+                    stopProgress(true)
                 }
-                fileViewModel.loadFiles(it);
+                fileViewModel.loadFiles(it)
             } })
 
         main_actionButton.setOnClickListener {
@@ -69,17 +69,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun stopProgress(empty: Boolean) {
-        initProgress.visibility = View.GONE;
+        initProgress.visibility = View.GONE
         if (empty){
-            initText.visibility = View.VISIBLE;
+            initText.visibility = View.VISIBLE
         }else{
-            initText.visibility = View.GONE;
+            initText.visibility = View.GONE
         }
     }
 
     fun setRecyclerView() {
         viewManager = LinearLayoutManager(this)
-        viewAdapter = FileAdapter(this);
+        viewAdapter = FileAdapter(this)
 
         recyclerView = findViewById<RecyclerView>(R.id.file_recyclerView).apply {
             // use this setting to improve performance if you know that changes
@@ -117,8 +117,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (resultCode == 200){
-            loginButtonRef.title = "Logout";
-            fileViewModel.loadFilesFromApi(loadedFiles = fileViewModel.loadedFiles);
+            loginButtonRef.title = "Logout"
+            registerButton.isVisible = false;
+            fileViewModel.loadFilesFromApi(loadedFiles = fileViewModel.loadedFiles)
             Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
         }
     }
@@ -129,46 +130,50 @@ class MainActivity : AppCompatActivity() {
 
             //start progress
             val mainProgress = findViewById<ProgressBar>(R.id.main_progress)
-            mainProgress.visibility = View.VISIBLE;
+            mainProgress.visibility = View.VISIBLE
 
             //get fileName from uri
                 val filePathColumn = arrayOf(DISPLAY_NAME)
                 val cursor = contentResolver.query(selectedFile, filePathColumn, null, null, null)
                 if (cursor !== null) {
                     cursor.moveToFirst()
-                    fileName = cursor.getString(0);
-                    cursor.close();
+                    fileName = cursor.getString(0)
+                    cursor.close()
                 }
-                val stream = contentResolver.openInputStream(selectedFile);
+                val stream = contentResolver.openInputStream(selectedFile)
 
-                if(sharedRepository.isUserLogedIn()){
-                    fileViewModel.uploadPost(stream, fileName, sharedRepository.getAuthKey(),this::finishUpload);
+            if(sharedRepository.isUserLogedIn()){
+                    fileViewModel.uploadPost(stream, fileName, sharedRepository.getAuthKey(),this::finishUpload)
                 }else{
-                    fileViewModel.uploadAnonPost(stream, fileName, this::finishUpload);
+                    fileViewModel.uploadAnonPost(stream, fileName, this::finishUpload)
                 }
         }
     }
 
     fun finishUpload(message: String?){
-        val handler = Handler(this.getMainLooper())
+        val handler = Handler(this.mainLooper)
         handler.post(Runnable {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         })
 
         val mainProgress  =   findViewById<ProgressBar>(R.id.main_progress)
-        mainProgress.visibility = View.INVISIBLE;
+        mainProgress.visibility = View.INVISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.main_toolbar, menu)
 
-        loginButtonRef = menu.findItem(action_login);
+        loginButtonRef = menu.findItem(action_login)
+        registerButton = menu.findItem(action_register)
         if (sharedRepository.isUserLogedIn()){
-            menu.findItem(action_login).title = "Logout";
+            menu.findItem(action_login).title = "Logout"
+            registerButton.isVisible = false
         }else{
-            menu.findItem(action_login).title = "Login";
+            menu.findItem(action_login).title = "Login"
+            registerButton.isVisible = true
         }
+
 
         val searchItem = menu.findItem(action_search)
         val searchView = searchItem.actionView as SearchView
@@ -195,15 +200,16 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         action_login -> {
             if (sharedRepository.isUserLogedIn()){
-                sharedRepository.deleteToken();
-                item.title = "Login";
+                sharedRepository.deleteToken()
+                item.title = "Login"
+                registerButton.isVisible = true;
                 Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
             }else{
                 openLoginActivity()
             }
-            true;
+            true
         }
-        else ->  super.onOptionsItemSelected(item);
+        else ->  super.onOptionsItemSelected(item)
     }
 
     fun openLoginActivity(){
