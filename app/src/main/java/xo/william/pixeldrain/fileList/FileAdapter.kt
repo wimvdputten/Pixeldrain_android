@@ -12,6 +12,8 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import xo.william.pixeldrain.FileViewActivity
 import xo.william.pixeldrain.R
 import xo.william.pixeldrain.model.FileViewModel
@@ -26,6 +28,8 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
 
     private var expandedPositon = -1
     private var clipBoard: ClipBoard = ClipBoard(context)
+    private val format = Json { ignoreUnknownKeys = true }
+
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -75,6 +79,7 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
             val mimeType = infoModel.mime_type;
             if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video")){
                 val intent = Intent(context, FileViewActivity::class.java)
+                intent.putExtra("infoModel", format.encodeToString(infoModel))
                 context.startActivity(intent);
             }else{
                 Toast.makeText(holder.linearLayout.context, "This file type is not supported", Toast.LENGTH_SHORT).show()
