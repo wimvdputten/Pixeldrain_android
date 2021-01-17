@@ -3,6 +3,8 @@ package xo.william.pixeldrain.fileList
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +20,7 @@ import xo.william.pixeldrain.FileViewActivity
 import xo.william.pixeldrain.R
 import xo.william.pixeldrain.model.FileViewModel
 import xo.william.pixeldrain.repository.ClipBoard
+
 
 class FileAdapter(private var context: Context, private var fileViewModel: FileViewModel) :
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
@@ -77,18 +80,21 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         val thumbnail = holder.linearLayout.findViewById<ImageView>(R.id.fileThumbnail);
         thumbnail.setOnClickListener{
             val mimeType = infoModel.mime_type;
-            if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video") || mimeType.contains("audio")){
+            if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video") || mimeType.contains(
+                    "audio")){
                 val intent = Intent(context, FileViewActivity::class.java)
                 intent.putExtra("infoModel", format.encodeToString(infoModel))
                 context.startActivity(intent);
             }else{
-                Toast.makeText(holder.linearLayout.context, "This file type is not supported", Toast.LENGTH_SHORT).show()
+                Toast.makeText(holder.linearLayout.context,
+                    "This file type is not supported",
+                    Toast.LENGTH_SHORT).show()
             }
         }
 
         val downloadButton = holder.linearLayout.findViewById<Button>(R.id.downloadButton);
         downloadButton.setOnClickListener {
-            Toast.makeText(holder.linearLayout.context, "Download", Toast.LENGTH_LONG).show()
+            downloadFile(infoModel)
         }
 
         val copyButton = holder.linearLayout.findViewById<Button>(R.id.copyButton);
@@ -105,6 +111,8 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
             openDeleteFileAlert(infoModel)
         }
     }
+
+
 
     fun setDetailVisibility(holder: MyViewHolder, position: Int) {
         val isExpanded = this.expandedPositon == position;
@@ -179,6 +187,16 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         }
 
         notifyDataSetChanged()
+    }
+
+    private fun downloadFile(infoModel: InfoModel) {
+        val url = "${infoModel.getFileUrl()}?download"
+        val uris = Uri.parse(url)
+        val intents = Intent(Intent.ACTION_VIEW, uris)
+        val b = Bundle()
+        b.putBoolean("new_window", true)
+        intents.putExtras(b)
+        context.startActivity(intents)
     }
 
     fun openDeleteFileAlert(infoModel: InfoModel) {
