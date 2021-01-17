@@ -6,7 +6,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.github.kittinunf.fuel.core.requests.CancellableRequest
@@ -52,7 +51,7 @@ class FileViewActivity : AppCompatActivity() {
         loadFile()
     }
 
-    fun loadFile() {
+    private fun loadFile() {
         val type = infoModel.mime_type;
         if (type.contains("image")) {
             loadImage();
@@ -65,7 +64,7 @@ class FileViewActivity : AppCompatActivity() {
         }
     }
 
-    fun loadImage() {
+    private fun loadImage() {
         val imageFile = findViewById<ImageView>(R.id.imageFile)
         val fileProgress = findViewById<ProgressBar>(R.id.fileProgressBar);
         try {
@@ -81,7 +80,7 @@ class FileViewActivity : AppCompatActivity() {
         }
     }
 
-    fun loadVideo() {
+    private fun loadVideo() {
         val fileProgress = findViewById<ProgressBar>(R.id.fileProgressBar)
         fileProgress.visibility = View.GONE
         val videoExoFile = findViewById<PlayerView>(R.id.videoExoFile)
@@ -96,13 +95,13 @@ class FileViewActivity : AppCompatActivity() {
         exoPlayer.play()
     }
 
-    fun loadText() {
+    private fun loadText() {
         request = FuelService().getFileText(infoModel.getFileUrl())
             .responseString() { _, _, result ->
                 when (result) {
                     is Result.Success -> {
                         Log.d("text", "text ${result.get()}")
-                        textLiveData.postValue( result.get())
+                        textLiveData.postValue(result.get())
                     }
                     is Result.Failure -> {
                         Log.d("text", "error ${result.error.exception.message}")

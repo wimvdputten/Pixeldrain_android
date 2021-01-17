@@ -1,7 +1,6 @@
 package xo.william.pixeldrain.model
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +22,8 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     private var sharedRepository: SharedRepository = SharedRepository(application);
     private val fileDao: FileDao = AppDatabase.getDatabase(application, viewModelScope).fileDao()
 
-    val loadedFiles: MutableLiveData<MutableList<InfoModel>> = MutableLiveData(mutableListOf<InfoModel>())
+    val loadedFiles: MutableLiveData<MutableList<InfoModel>> =
+        MutableLiveData(mutableListOf<InfoModel>())
     val dbFiles: LiveData<List<File>>
 
     init {
@@ -33,21 +33,21 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadFiles(list: List<File>) = viewModelScope.launch(Dispatchers.IO) {
-       list.forEach {
-           repository.loadFileInfo(it, loadedFiles);
-       }
-    }
-
-    fun loadFilesFromApi(loadedFiles: MutableLiveData<MutableList<InfoModel>>) = viewModelScope.launch(Dispatchers.IO) {
-        if (sharedRepository.isUserLogedIn()){
-            repository.loadApiFiles(loadedFiles, sharedRepository.getAuthKey())
+        list.forEach {
+            repository.loadFileInfo(it, loadedFiles);
         }
     }
+
+    fun loadFilesFromApi(loadedFiles: MutableLiveData<MutableList<InfoModel>>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            if (sharedRepository.isUserLoggedIn()) {
+                repository.loadApiFiles(loadedFiles, sharedRepository.getAuthKey())
+            }
+        }
 
     fun setSharedResponse(sharedRepository: SharedRepository) {
         this.sharedRepository = sharedRepository;
     }
-
 
 
     /**
@@ -60,14 +60,10 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                     .responseString { request, response, result ->
                         when (result) {
                             is Result.Success -> {
-                                val data = result.get()
-                                Log.d("response", "data: " + data);
-                                val file = format.decodeFromString<InfoModel>(data);
-                                val dbFile = File(file.id)
-                                insert(dbFile);
+                                val file = format.decodeFromString<InfoModel>(result.get());
+                                insert(File(file.id));
                                 callback("Succes: " + file.id + " added");
                             }
-
                             is Result.Failure -> {
                                 val ex = result.getException()
                                 callback("Something went wrong: " + ex.message);
@@ -75,7 +71,6 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     }
             }
-
         }
 
     /**
@@ -90,44 +85,34 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             if (stream !== null) {
                 repository.uploadPost(stream, fileName, authKey)
-                    .interrupt { Log.d("response", "interupted") }
                     .responseString() { request, response, result ->
                         when (result) {
                             is Result.Success -> {
                                 val file = format.decodeFromString<InfoModel>(result.get());
-                                //add uloaded file to loadedFiles list
+                                //add loaded file to loadedFiles list
                                 repository.loadFileInfo(File(file.id), loadedFiles);
-
                                 callback("Succes: " + file.id + " added");
                             }
-
                             is Result.Failure -> {
                                 val ex = result.getException()
-                                Log.d("response", "error code: ${response.statusCode}")
-                                Log.d("response", "error: ${ex.message}")
-                                if (response.statusCode == 401) {
-                                    // TODO Handle unauthorized
-                                }
-
                                 callback("Something went wrong: " + ex.message);
                             }
                         }
                     }
             }
-
         }
 
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */
-    fun insert(file: File) = viewModelScope.launch(Dispatchers.IO) {
+    private fun insert(file: File) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(file)
     }
 
     fun deleteFile(infoModel: InfoModel, callback: (String) -> Unit) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteFromDb(infoModel.id)
-            if (infoModel.can_edit && sharedRepository.isUserLogedIn()) {
+            if (infoModel.can_edit && sharedRepository.isUserLoggedIn()) {
                 repository.deleteFromApi(infoModel.id, sharedRepository.getAuthKey())
                     .response() { result ->
                         when (result) {
@@ -145,6 +130,5 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                 repository.deleteFromLoadedFiles(infoModel.id, loadedFiles);
                 callback("Deleted ${infoModel.name}")
             }
-
         }
 }

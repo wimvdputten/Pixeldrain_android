@@ -14,10 +14,9 @@ class ClipBoard(private var context: Context) {
         try {
             val clipData = ClipData.newPlainText("url", text);
             clipBoard.setPrimaryClip(clipData);
-            Toast.makeText(context, "Copied to clipboard: ${text}", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Copied to clipboard: $text", Toast.LENGTH_SHORT).show();
         } catch (e: Exception) {
             Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-
     }
 }

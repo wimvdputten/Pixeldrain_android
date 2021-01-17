@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         fileViewModel.dbFiles.observe(
             this,
             Observer { files -> files?.let {
-                if (it.isEmpty() && !sharedRepository.isUserLogedIn()){
+                if (it.isEmpty() && !sharedRepository.isUserLoggedIn()){
                     stopProgress(true)
                 }
                 fileViewModel.loadFiles(it)
@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val stream = contentResolver.openInputStream(selectedFile)
 
-            if(sharedRepository.isUserLogedIn()){
+            if(sharedRepository.isUserLoggedIn()){
                     fileViewModel.uploadPost(stream, fileName, sharedRepository.getAuthKey(),this::finishUpload)
                 }else{
                     fileViewModel.uploadAnonPost(stream, fileName, this::finishUpload)
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
 
         loginButtonRef = menu.findItem(action_login)
         registerButton = menu.findItem(action_register)
-        if (sharedRepository.isUserLogedIn()){
+        if (sharedRepository.isUserLoggedIn()){
             menu.findItem(action_login).title = "Logout"
             registerButton.isVisible = false
         }else{
@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         action_login -> {
-            if (sharedRepository.isUserLogedIn()){
+            if (sharedRepository.isUserLoggedIn()){
                 sharedRepository.deleteToken()
                 item.title = "Login"
                 registerButton.isVisible = true;

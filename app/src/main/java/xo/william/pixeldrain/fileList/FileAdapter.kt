@@ -26,18 +26,21 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
     RecyclerView.Adapter<FileAdapter.MyViewHolder>() {
 
 
-    private var loadedFiles = emptyList<InfoModel>() // Cached copy of words
+    /**
+     * loaded files
+     */
+    private var loadedFiles = emptyList<InfoModel>()
+
+    /**
+     * loaded files holder, holds files on search
+     */
     private var loadedFilesHolder = emptyList<InfoModel>() // Cached copy of words
 
-    private var expandedPositon = -1
+    private var expandedPosition = -1
     private var clipBoard: ClipBoard = ClipBoard(context)
     private val format = Json { ignoreUnknownKeys = true }
 
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder.
-    // Each data item is just a string in this case that is shown in a TextView.
     class MyViewHolder(val linearLayout: LinearLayout) : RecyclerView.ViewHolder(linearLayout)
 
     // Create new views (invoked by the layout manager)
@@ -51,23 +54,20 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         val nameTextView = holder.linearLayout.findViewById<TextView>(R.id.nameTextView)
         val fileTypeTextView = holder.linearLayout.findViewById<TextView>(R.id.fileTypeTextView)
-        val uploadDateTextView =
-            holder.linearLayout.findViewById<TextView>(R.id.uploadDateTextView)
+        val uploadDateTextView = holder.linearLayout.findViewById<TextView>(R.id.uploadDateTextView)
         val viewsTextView = holder.linearLayout.findViewById<TextView>(R.id.viewsTextview)
 
         val infoModel: InfoModel = loadedFiles[position];
 
         loadImage(infoModel, holder);
         nameTextView.text = infoModel.name;
-        fileTypeTextView.text = loadedFiles[position].mime_type
-        viewsTextView.text = "${loadedFiles[position].views} views";
+        fileTypeTextView.text = infoModel.mime_type
+        viewsTextView.text = "${infoModel.views} views";
 
-        //basic date formating
-        val formattedDate = loadedFiles[position].date_upload.substring(0, 16).replace("T", " ")
+        //basic date formatting
+        val formattedDate = infoModel.date_upload.substring(0, 16).replace("T", " ")
         uploadDateTextView.text = formattedDate
 
         setDetailVisibility(holder, position);
@@ -76,19 +76,21 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
     }
 
     private fun setOnClickListener(holder: MyViewHolder, infoModel: InfoModel) {
-
         val thumbnail = holder.linearLayout.findViewById<ImageView>(R.id.fileThumbnail);
-        thumbnail.setOnClickListener{
+
+        thumbnail.setOnClickListener {
             val mimeType = infoModel.mime_type;
-            if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video") || mimeType.contains(
-                    "audio")){
+            if (mimeType.contains("image") ||
+                mimeType.contains("text") ||
+                mimeType.contains("video") ||
+                mimeType.contains("audio")
+            ) {
                 val intent = Intent(context, FileViewActivity::class.java)
                 intent.putExtra("infoModel", format.encodeToString(infoModel))
                 context.startActivity(intent);
-            }else{
-                Toast.makeText(holder.linearLayout.context,
-                    "This file type is not supported",
-                    Toast.LENGTH_SHORT).show()
+            } else {
+                val text = "This file type is not supported"
+                Toast.makeText(holder.linearLayout.context,text,Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -112,10 +114,8 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         }
     }
 
-
-
-    fun setDetailVisibility(holder: MyViewHolder, position: Int) {
-        val isExpanded = this.expandedPositon == position;
+    private fun setDetailVisibility(holder: MyViewHolder, position: Int) {
+        val isExpanded = this.expandedPosition == position;
         val detailItemLayout =
             holder.linearLayout.findViewById<ConstraintLayout>(R.id.detailItemLayout);
 
@@ -124,35 +124,34 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         } else {
             detailItemLayout.visibility = View.GONE
         }
-
     }
 
     private fun handleExpand(holder: MyViewHolder, position: Int) {
         val mainItemLayout = holder.linearLayout.findViewById<ConstraintLayout>(R.id.mainItemLayout)
-        val isExpanded: Boolean = position == this.expandedPositon
+        val isExpanded: Boolean = position == this.expandedPosition
+
         mainItemLayout.setOnClickListener {
             if (isExpanded) {
-                this.expandedPositon = -1;
+                this.expandedPosition = -1;
             } else {
-                this.expandedPositon = position;
+                this.expandedPosition = position;
             }
-
             notifyItemChanged(position)
         }
     }
 
-    internal fun loadImage(infoModel: InfoModel, holder: MyViewHolder) {
-        val imageview = holder.linearLayout.findViewById<ImageView>(R.id.fileThumbnail)
+    private fun loadImage(infoModel: InfoModel, holder: MyViewHolder) {
+        val imageView = holder.linearLayout.findViewById<ImageView>(R.id.fileThumbnail)
         val progressBar =
             holder.linearLayout.findViewById<ProgressBar>(R.id.fileThumbnailLoader)
+
         try {
             val urlString = infoModel.getThumbnailUrl()
-            Glide.with(holder.linearLayout).load(urlString).fitCenter().into(imageview)
-
+            Glide.with(holder.linearLayout).load(urlString).fitCenter().into(imageView)
             progressBar.visibility = View.GONE
         } catch (e: Exception) {
             progressBar.visibility = View.GONE
-            Log.e("loadImage", "error: " + infoModel.getThumbnailUrl() + "  " + e.message)
+            Log.e("loadImage", "Error: ${e.message}")
         }
     }
 
@@ -162,21 +161,18 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         notifyDataSetChanged()
     }
 
-    fun copyToClipBoard(infoModel: InfoModel?) {
-        if (infoModel !== null) {
+    private fun copyToClipBoard(infoModel: InfoModel) {
             clipBoard.copyToClipBoard(infoModel.getShareUrl());
-        }
     }
 
-    fun shareUrl(infoModel: InfoModel?) {
-        if (infoModel !== null) {
-            val intent: Intent = Intent()
-                .setType("text/plain")
-                .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT,
-                    "Checkout this file on Pixeldrain: ${infoModel.getShareUrl()}")
-            val shareIntent = Intent.createChooser(intent, "Share");
-            context.startActivity(shareIntent);
-        }
+    private fun shareUrl(infoModel: InfoModel) {
+        val text = "Check this file out on PixelDrain: ${infoModel.getShareUrl()}"
+        val intent: Intent = Intent()
+            .setType("text/plain")
+            .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT, text)
+
+        val shareIntent = Intent.createChooser(intent, "Share ${infoModel.name}");
+        context.startActivity(shareIntent);
     }
 
     fun searchFiles(query: String?) {
@@ -185,7 +181,6 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         } else {
             loadedFiles = loadedFilesHolder;
         }
-
         notifyDataSetChanged()
     }
 
@@ -199,12 +194,11 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         context.startActivity(intents)
     }
 
-    fun openDeleteFileAlert(infoModel: InfoModel) {
-
+    private fun openDeleteFileAlert(infoModel: InfoModel) {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Are you sure you want to delete ${infoModel.name}")
         var message: String
 
+        builder.setTitle("Are you sure you want to delete ${infoModel.name}")
         if (infoModel.can_edit) {
             message = "After deleting this file no one will be able to see it."
         } else {
@@ -225,7 +219,7 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         builder.create().show()
     }
 
-    fun showToast(message: String) {
+    private fun showToast(message: String) {
         val handler = Handler(context.mainLooper)
         handler.post(Runnable {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -234,6 +228,4 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = loadedFiles.size
-
-
 }

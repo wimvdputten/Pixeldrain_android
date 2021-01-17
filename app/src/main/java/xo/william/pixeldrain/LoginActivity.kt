@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
             Observer { response -> handleLoginResponse(response) })
     }
 
-    fun handleLoginResponse(response: LoginResponse) {
+    private fun handleLoginResponse(response: LoginResponse) {
         loginProgress.visibility = View.GONE;
         if (response.auth_key.isNotEmpty()) {
             sharedRepository.saveToken(response.auth_key);

@@ -34,23 +34,23 @@ class FileRepository(private val fileDao: FileDao) {
     }
 
     fun uploadAnonPost(selectedFile: InputStream, fileName: String?): UploadRequest {
-      return   fuelService.uploadAnonFile(selectedFile, fileName)
+        return fuelService.uploadAnonFile(selectedFile, fileName)
     }
 
     fun uploadPost(selectedFile: InputStream, fileName: String?, authKey: String): UploadRequest {
-        return   fuelService.uploadFile(selectedFile, fileName, authKey);
+        return fuelService.uploadFile(selectedFile, fileName, authKey);
 
     }
 
     fun loadFileInfo(file: File, loadedFiles: MutableLiveData<MutableList<InfoModel>>) {
-        fuelService.getFileInfoById(file.id).responseString{request, response, result ->
-            when (result){
+        fuelService.getFileInfoById(file.id).responseString { request, response, result ->
+            when (result) {
                 is Result.Success -> {
                     val infoFile = format.decodeFromString<InfoModel>(result.get());
                     loadedFiles.value?.add(infoFile);
                     loadedFiles.postValue(loadedFiles.value);
                 }
-                is Result.Failure ->{
+                is Result.Failure -> {
                     Log.d("response", "error: " + result.error.exception.message);
                 }
             }
@@ -58,26 +58,22 @@ class FileRepository(private val fileDao: FileDao) {
     }
 
     fun loadApiFiles(loadedFiles: MutableLiveData<MutableList<InfoModel>>, authKey: String) {
-        fuelService.getFiles(authKey).responseString(){ _, response, result ->
-                when(result){
-                    is Result.Success -> {
-                         val infoModelList = format.decodeFromString<InfoModelList>(result.get())
-                        loadedFiles.value?.addAll(infoModelList.files)
-                        loadedFiles.postValue(loadedFiles.value)
-                    }
-                    is Result.Failure -> {
-                        if (response.statusCode == 401) {
-                            // TODO Handle unauthorized
-                        }
-
-                        Log.d("response", "error: " + result.error.exception.message);
-                    }
+        fuelService.getFiles(authKey).responseString() { _, _, result ->
+            when (result) {
+                is Result.Success -> {
+                    val infoModelList = format.decodeFromString<InfoModelList>(result.get())
+                    loadedFiles.value?.addAll(infoModelList.files)
+                    loadedFiles.postValue(loadedFiles.value)
                 }
-            };
+                is Result.Failure -> {
+                    Log.d("response", "error: " + result.error.exception.message);
+                }
+            }
+        };
     }
 
     fun deleteFromApi(id: String, authKey: String): Request {
-    return    fuelService.deleteFile(id,authKey)
+        return fuelService.deleteFile(id, authKey)
     }
 
     fun deleteFromLoadedFiles(id: String, loadedFiles: MutableLiveData<MutableList<InfoModel>>) {
@@ -87,6 +83,5 @@ class FileRepository(private val fileDao: FileDao) {
             loadedFiles.postValue(loadedFilesValue)
         }
     }
-
 
 }

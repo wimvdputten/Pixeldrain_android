@@ -18,7 +18,7 @@ class LoginRepository() {
         password: String,
         loginResponse: MutableLiveData<LoginResponse>,
     ) {
-        fuelService.loginUser(username, password).responseString { request, response, result ->
+        fuelService.loginUser(username, password).responseString { _, _, result ->
             when (result) {
                 is Result.Failure -> {
                     val ex = result.getException()
@@ -26,7 +26,6 @@ class LoginRepository() {
                     loginResponseData.message = "Error: ${ex.message}"
                     loginResponse.postValue(loginResponseData);
                 }
-
                 is Result.Success -> {
                     val data = result.get()
                     val loginResponseData = format.decodeFromString<LoginResponse>(data);
@@ -36,6 +35,5 @@ class LoginRepository() {
                 }
             }
         }
-
     }
 }

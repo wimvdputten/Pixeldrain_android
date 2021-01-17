@@ -24,7 +24,7 @@ class SharedRepository {
         }
     }
 
-    fun isUserLogedIn(): Boolean {
+    fun isUserLoggedIn(): Boolean {
         val authKey = sharedPreferences.getString(tokenPath, "");
         return !authKey.isNullOrEmpty()
     }
@@ -40,7 +40,6 @@ class SharedRepository {
     }
 
     fun deleteToken() {
-        // TODO(Clear token correctly);
         with(sharedPreferences.edit()) {
             putString(tokenPath, "")
             apply();
