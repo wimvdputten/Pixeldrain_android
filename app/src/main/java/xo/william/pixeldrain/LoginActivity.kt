@@ -2,12 +2,16 @@ package xo.william.pixeldrain
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.github.kittinunf.fuel.core.requests.tryCancel
+import kotlinx.android.synthetic.main.activity_file_view.*
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_login.sub_toolbar
 import xo.william.pixeldrain.model.LoginResponse
 import xo.william.pixeldrain.model.LoginViewModel
 import xo.william.pixeldrain.repository.SharedRepository
@@ -25,6 +29,11 @@ class LoginActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        setSupportActionBar(sub_toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+        }
+
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         userInput.doOnTextChanged { text, _, _, _ ->
@@ -60,4 +69,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        finish();
+        return super.onOptionsItemSelected(item)
+    }
 }
