@@ -94,4 +94,8 @@ class FuelService() {
 
         return Fuel.delete(url).header(Headers.COOKIE to authKeyCookie)
     }
+
+    fun getFileText(fileUrl: String): Request {
+        return Fuel.get(fileUrl);
+    }
 }

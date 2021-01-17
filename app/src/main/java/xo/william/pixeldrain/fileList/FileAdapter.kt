@@ -77,7 +77,7 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
         val thumbnail = holder.linearLayout.findViewById<ImageView>(R.id.fileThumbnail);
         thumbnail.setOnClickListener{
             val mimeType = infoModel.mime_type;
-            if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video")){
+            if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video") || mimeType.contains("audio")){
                 val intent = Intent(context, FileViewActivity::class.java)
                 intent.putExtra("infoModel", format.encodeToString(infoModel))
                 context.startActivity(intent);
