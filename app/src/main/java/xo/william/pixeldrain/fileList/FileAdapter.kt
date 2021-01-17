@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import xo.william.pixeldrain.FileViewActivity
 import xo.william.pixeldrain.R
 import xo.william.pixeldrain.model.FileViewModel
 import xo.william.pixeldrain.repository.ClipBoard
@@ -68,6 +69,17 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
     }
 
     private fun setOnClickListener(holder: MyViewHolder, infoModel: InfoModel) {
+
+        val thumbnail = holder.linearLayout.findViewById<ImageView>(R.id.fileThumbnail);
+        thumbnail.setOnClickListener{
+            val mimeType = infoModel.mime_type;
+            if (mimeType.contains("image") || mimeType.contains("text") || mimeType.contains("video")){
+                val intent = Intent(context, FileViewActivity::class.java)
+                context.startActivity(intent);
+            }else{
+                Toast.makeText(holder.linearLayout.context, "This file type is not supported", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         val downloadButton = holder.linearLayout.findViewById<Button>(R.id.downloadButton);
         downloadButton.setOnClickListener {
