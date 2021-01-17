@@ -156,7 +156,7 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
 
     fun copyToClipBoard(infoModel: InfoModel?) {
         if (infoModel !== null) {
-            clipBoard.copyToClipBoard(infoModel.getFileUrl());
+            clipBoard.copyToClipBoard(infoModel.getShareUrl());
         }
     }
 
@@ -165,7 +165,7 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
             val intent: Intent = Intent()
                 .setType("text/plain")
                 .setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT,
-                    "Checkout this file on Pixeldrain: ${infoModel.getFileUrl()}")
+                    "Checkout this file on Pixeldrain: ${infoModel.getShareUrl()}")
             val shareIntent = Intent.createChooser(intent, "Share");
             context.startActivity(shareIntent);
         }
