@@ -18,9 +18,9 @@ import java.io.InputStream
 class FileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val format = Json { ignoreUnknownKeys = true }
-    private val repository: FileRepository;
-    private var sharedRepository: SharedRepository = SharedRepository(application);
-    private val fileDao: FileDao = AppDatabase.getDatabase(application, viewModelScope).fileDao()
+    private val repository: FileRepository
+    private var sharedRepository: SharedRepository = SharedRepository(application)
+    private val fileDao: FileDao = AppDatabase.getDatabase(application).fileDao()
 
     val loadedFiles: MutableLiveData<MutableList<InfoModel>> =
         MutableLiveData(mutableListOf<InfoModel>())
@@ -28,13 +28,13 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         repository = FileRepository(fileDao)
-        dbFiles = repository.getDatabaseFiles();
-        loadFilesFromApi(loadedFiles);
+        dbFiles = repository.getDatabaseFiles()
+        loadFilesFromApi(loadedFiles)
     }
 
     fun loadFiles(list: List<File>) = viewModelScope.launch(Dispatchers.IO) {
         list.forEach {
-            repository.loadFileInfo(it, loadedFiles);
+            repository.loadFileInfo(it, loadedFiles)
         }
     }
 
@@ -46,7 +46,7 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     fun setSharedResponse(sharedRepository: SharedRepository) {
-        this.sharedRepository = sharedRepository;
+        this.sharedRepository = sharedRepository
     }
 
 
@@ -57,16 +57,16 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             if (stream !== null) {
                 repository.uploadAnonPost(stream, fileName)
-                    .responseString { request, response, result ->
+                    .responseString { _, _, result ->
                         when (result) {
                             is Result.Success -> {
-                                val file = format.decodeFromString<InfoModel>(result.get());
-                                insert(File(file.id));
-                                callback("Succes: " + file.id + " added");
+                                val file = format.decodeFromString<InfoModel>(result.get())
+                                insert(File(file.id))
+                                callback("Succes: " + file.id + " added")
                             }
                             is Result.Failure -> {
                                 val ex = result.getException()
-                                callback("Something went wrong: " + ex.message);
+                                callback("Something went wrong: " + ex.message)
                             }
                         }
                     }
@@ -85,17 +85,17 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             if (stream !== null) {
                 repository.uploadPost(stream, fileName, authKey)
-                    .responseString() { request, response, result ->
+                    .responseString { _, _, result ->
                         when (result) {
                             is Result.Success -> {
-                                val file = format.decodeFromString<InfoModel>(result.get());
+                                val file = format.decodeFromString<InfoModel>(result.get())
                                 //add loaded file to loadedFiles list
-                                repository.loadFileInfo(File(file.id), loadedFiles);
-                                callback("Succes: " + file.id + " added");
+                                repository.loadFileInfo(File(file.id), loadedFiles)
+                                callback("Succes: " + file.id + " added")
                             }
                             is Result.Failure -> {
                                 val ex = result.getException()
-                                callback("Something went wrong: " + ex.message);
+                                callback("Something went wrong: " + ex.message)
                             }
                         }
                     }
@@ -114,10 +114,10 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
             repository.deleteFromDb(infoModel.id)
             if (infoModel.can_edit && sharedRepository.isUserLoggedIn()) {
                 repository.deleteFromApi(infoModel.id, sharedRepository.getAuthKey())
-                    .response() { result ->
+                    .response { result ->
                         when (result) {
                             is Result.Success -> {
-                                repository.deleteFromLoadedFiles(infoModel.id, loadedFiles);
+                                repository.deleteFromLoadedFiles(infoModel.id, loadedFiles)
                                 callback("Deleted ${infoModel.name}")
                             }
                             is Result.Failure -> {
@@ -127,7 +127,7 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     }
             } else {
-                repository.deleteFromLoadedFiles(infoModel.id, loadedFiles);
+                repository.deleteFromLoadedFiles(infoModel.id, loadedFiles)
                 callback("Deleted ${infoModel.name}")
             }
         }

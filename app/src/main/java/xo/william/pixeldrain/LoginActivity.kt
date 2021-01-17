@@ -14,48 +14,48 @@ import xo.william.pixeldrain.repository.SharedRepository
 
 class LoginActivity : AppCompatActivity() {
 
-    private var username = "";
-    private var password = "";
+    private var username = ""
+    private var password = ""
 
-    private lateinit var loginViewModel: LoginViewModel;
-    private lateinit var sharedRepository: SharedRepository;
+    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var sharedRepository: SharedRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        sharedRepository = SharedRepository(this);
+        sharedRepository = SharedRepository(this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
-        userInput.doOnTextChanged { text, start, before, count ->
-            username = text.toString();
-            loginButton.isEnabled = (username.isNotEmpty() && password.isNotEmpty());
+        userInput.doOnTextChanged { text, _, _, _ ->
+            username = text.toString()
+            loginButton.isEnabled = (username.isNotEmpty() && password.isNotEmpty())
         }
 
-        passwordInput.doOnTextChanged { text, start, before, count ->
-            password = text.toString();
-            loginButton.isEnabled = (username.isNotEmpty() && password.isNotEmpty());
+        passwordInput.doOnTextChanged { text, _, _, _ ->
+            password = text.toString()
+            loginButton.isEnabled = (username.isNotEmpty() && password.isNotEmpty())
         }
 
         loginButton.setOnClickListener {
-            loginButton.isEnabled = false;
+            loginButton.isEnabled = false
             loginProgress.visibility = View.VISIBLE
 
-            loginViewModel.loginUser(username, password);
+            loginViewModel.loginUser(username, password)
         }
 
         loginViewModel.loginResponse.observe(this,
-            Observer { response -> handleLoginResponse(response) })
+            { response -> handleLoginResponse(response) })
     }
 
     private fun handleLoginResponse(response: LoginResponse) {
-        loginProgress.visibility = View.GONE;
+        loginProgress.visibility = View.GONE
         if (response.auth_key.isNotEmpty()) {
-            sharedRepository.saveToken(response.auth_key);
+            sharedRepository.saveToken(response.auth_key)
             setResult(200)
-            finish();
+            finish()
         } else {
-            loginButton.isEnabled = true;
+            loginButton.isEnabled = true
             Toast.makeText(this, "Error: ${response.message}", Toast.LENGTH_LONG).show()
         }
     }
