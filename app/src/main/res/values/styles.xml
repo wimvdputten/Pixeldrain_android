@@ -5,6 +5,15 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+    <style name="Widget.AppCompat.Button.Borderless.Colored.inset" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
     </style>
 
+    <style name="Widget.AppCompat.Button.Colored.inset" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
 </resources>
