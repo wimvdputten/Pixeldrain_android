@@ -22,7 +22,6 @@ Features include:
 * View your uploaded files from within the app
 * View your uploaded files by logging in to your pixeldrain account
 * Delete your uploaded files
-* Light and dark themes
 * Search your uploaded files
 * Share your uploaded files easily
 
