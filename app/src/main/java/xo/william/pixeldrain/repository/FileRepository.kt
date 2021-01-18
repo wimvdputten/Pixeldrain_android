@@ -50,9 +50,6 @@ class FileRepository(private val fileDao: FileDao) {
                     loadedFiles.value?.add(infoFile)
                     loadedFiles.postValue(loadedFiles.value)
                 }
-                is Result.Failure -> {
-                    Log.d("response", "error: " + result.error.exception.message)
-                }
             }
         }
     }
@@ -64,9 +61,6 @@ class FileRepository(private val fileDao: FileDao) {
                     val infoModelList = format.decodeFromString<InfoModelList>(result.get())
                     loadedFiles.value?.addAll(infoModelList.files)
                     loadedFiles.postValue(loadedFiles.value)
-                }
-                is Result.Failure -> {
-                    Log.d("response", "error: " + result.error.exception.message)
                 }
             }
         }

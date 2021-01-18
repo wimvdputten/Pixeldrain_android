@@ -30,7 +30,6 @@ class LoginRepository() {
                     val data = result.get()
                     val loginResponseData = format.decodeFromString<LoginResponse>(data);
                     loginResponseData.succes = true;
-                    Log.d("response", "data: ${data}")
                     loginResponse.postValue(loginResponseData);
                 }
             }

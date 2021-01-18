@@ -20,7 +20,6 @@ class FuelService() {
         val url = baseUri + "file";
         val setFileName = if (fileName !== null) fileName else "file";
 
-        Log.d("response", "url: " + url + " " + fileName);
         return Fuel.upload(url, method = Method.POST, parameters = listOf("name" to setFileName))
             .add(BlobDataPart(selectedFile, name = "file", filename = setFileName));
     }

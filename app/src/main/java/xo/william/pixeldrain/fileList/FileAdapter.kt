@@ -151,7 +151,6 @@ class FileAdapter(private var context: Context, private var fileViewModel: FileV
             progressBar.visibility = View.GONE
         } catch (e: Exception) {
             progressBar.visibility = View.GONE
-            Log.e("loadImage", "Error: ${e.message}")
         }
     }
 
