@@ -180,7 +180,6 @@ class MainActivity : AppCompatActivity() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Log.d("search", "text ${query}")
                 viewAdapter.searchFiles(query)
                 return false
             }

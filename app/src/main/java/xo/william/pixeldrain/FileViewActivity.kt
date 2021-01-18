@@ -76,7 +76,6 @@ class FileViewActivity : AppCompatActivity() {
         } catch (e: Exception) {
             fileProgress.visibility = View.GONE
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show();
-            Log.e("loadImage", "error: " + infoModel.getThumbnailUrl() + "  " + e.message)
         }
     }
 
@@ -100,11 +99,9 @@ class FileViewActivity : AppCompatActivity() {
             .responseString() { _, _, result ->
                 when (result) {
                     is Result.Success -> {
-                        Log.d("text", "text ${result.get()}")
                         textLiveData.postValue(result.get())
                     }
                     is Result.Failure -> {
-                        Log.d("text", "error ${result.error.exception.message}")
                         textLiveData.postValue(result.error.exception.message)
                     }
                 }
