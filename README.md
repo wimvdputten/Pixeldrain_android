@@ -2,9 +2,9 @@
 
 Pixeldrain is a file sharing website built for speed and ease of use.
 Pixeldrain is built by [Fornax](https://twitter.com/Fornax96)
-This is an andoird application that uses the api of pixeldrain.
+This is an Android application that uses the API of Pixeldrain.
 Pixeldrain does not cost any money, though donations are appreciated.
-If you want to support the android app, support Pixeldrain.
+If you want to support the Android app, support Pixeldrain.
 Check out [Pixeldrain](https://pixeldrain.com/) for more information
 
 | Download | Reddit |
