@@ -11,7 +11,7 @@ Check out [Pixeldrain](https://pixeldrain.com/) for more information
 |-------|-------|
 | [![stable release](https://img.shields.io/github/downloads-pre/wimvdputten/Pixeldrain_android/latest/total)](https://github.com/wimvdputten/Pixeldrain_android/releases) | [![reddit](https://img.shields.io/reddit/subreddit-subscribers/pixeldrain?style=flat)](http://reddit.com/r/pixeldrain)  |
 
-**Upload filed and view them from within the app**
+**Upload files and view them from within the app**
 ![screenshots of app](https://raw.githubusercontent.com/wimvdputten/Pixeldrain_android/master/.github/app_screenshot.png)
 
 ## Features
